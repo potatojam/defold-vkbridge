@@ -1,5 +1,5 @@
-var LibVkSDK = {
-    $VkSDKLibrary: {
+var LibVkBridge = {
+    $VkBridgeLibrary: {
         _ysdk: null,
         _lb: null,
         _payments: null,
@@ -25,10 +25,10 @@ var LibVkSDK = {
         },
 
         send: function (cb_id, message_id, message) {
-            if (VkSDKLibrary._callback_object) {
+            if (VkBridgeLibrary._callback_object) {
                 // 0 and 1 are reserved IDs
                 if (cb_id == 0 && message_id == "init") {
-                    VkSDKLibrary._ysdk = message;
+                    VkBridgeLibrary._ysdk = message;
                     message = undefined;
                 }
 
@@ -38,25 +38,25 @@ var LibVkSDK = {
                 }
                 switch (typeof message) {
                     case "undefined":
-                        { { { makeDynCall("vii", "VkSDKLibrary._callback_empty") } } } (cb_id, cmsg_id);
+                        { { { makeDynCall("vii", "VkBridgeLibrary._callback_empty") } } } (cb_id, cmsg_id);
                         break;
                     case "number":
-                        { { { makeDynCall("viif", "VkSDKLibrary._callback_number") } } } (cb_id, cmsg_id, message);
+                        { { { makeDynCall("viif", "VkBridgeLibrary._callback_number") } } } (cb_id, cmsg_id, message);
                         break;
                     case "string":
                         var msg = allocate(intArrayFromString(message), "i8", ALLOC_NORMAL);
-                        { { { makeDynCall("viii", "VkSDKLibrary._callback_string") } } } (cb_id, cmsg_id, msg);
+                        { { { makeDynCall("viii", "VkBridgeLibrary._callback_string") } } } (cb_id, cmsg_id, msg);
                         Module._free(msg);
                         break;
                     case "object":
                         var msg = JSON.stringify(message);
                         msg = allocate(intArrayFromString(msg), "i8", ALLOC_NORMAL);
-                        { { { makeDynCall("viii", "VkSDKLibrary._callback_object") } } } (cb_id, cmsg_id, msg);
+                        { { { makeDynCall("viii", "VkBridgeLibrary._callback_object") } } } (cb_id, cmsg_id, msg);
                         Module._free(msg);
                         break;
                     case "boolean":
                         var msg = message ? 1 : 0;
-                        { { { makeDynCall("viii", "VkSDKLibrary._callback_bool") } } } (cb_id, cmsg_id, msg);
+                        { { { makeDynCall("viii", "VkBridgeLibrary._callback_bool") } } } (cb_id, cmsg_id, msg);
                         break;
                     default:
                         console.warn("Unsupported message format: " + typeof message);
@@ -65,28 +65,28 @@ var LibVkSDK = {
                     Module._free(cmsg_id);
                 }
             } else {
-                // console.warn("You didn't set callback for VkSDKLibrary");
-                if (typeof VkSDKLibrary_MsgQueue !== "undefined") {
-                    VkSDKLibrary_MsgQueue.push([cb_id, message_id, message]);
+                // console.warn("You didn't set callback for VkBridgeLibrary");
+                if (typeof VkBridgeLibrary_MsgQueue !== "undefined") {
+                    VkBridgeLibrary_MsgQueue.push([cb_id, message_id, message]);
                 }
             }
         },
 
         delaySend: function (cb_id, message_id, message) {
             setTimeout(() => {
-                VkSDKLibrary.send(cb_id, message_id, message);
+                VkBridgeLibrary.send(cb_id, message_id, message);
             }, 0);
         },
     },
 
-    VkSDKLibrary_RegisterCallbacks: function (
+    VkBridgeLibrary_RegisterCallbacks: function (
         callback_object,
         callback_string,
         callback_empty,
         callback_number,
         callback_bool
     ) {
-        var self = VkSDKLibrary;
+        var self = VkBridgeLibrary;
 
         self._callback_object = callback_object;
         self._callback_string = callback_string;
@@ -94,14 +94,14 @@ var LibVkSDK = {
         self._callback_number = callback_number;
         self._callback_bool = callback_bool;
 
-        while (typeof VkSDKLibrary_MsgQueue !== "undefined" && VkSDKLibrary_MsgQueue.length) {
-            var m = VkSDKLibrary_MsgQueue.shift();
+        while (typeof VkBridgeLibrary_MsgQueue !== "undefined" && VkBridgeLibrary_MsgQueue.length) {
+            var m = VkBridgeLibrary_MsgQueue.shift();
             self.send(m[0], m[1], m[2]);
         }
     },
 
-    VkSDKLibrary_RemoveCallbacks: function () {
-        var self = VkSDKLibrary;
+    VkBridgeLibrary_RemoveCallbacks: function () {
+        var self = VkBridgeLibrary;
 
         self._callback_object = null;
         self._callback_string = null;
@@ -112,5 +112,5 @@ var LibVkSDK = {
 
 };
 
-autoAddDeps(LibVkSDK, "$VkSDKLibrary");
-mergeInto(LibraryManager.library, LibVkSDK);
+autoAddDeps(LibVkBridge, "$VkBridgeLibrary");
+mergeInto(LibraryManager.library, LibVkBridge);

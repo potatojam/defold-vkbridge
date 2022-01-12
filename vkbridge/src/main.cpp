@@ -1,8 +1,8 @@
 // myextension.cpp
 // Extension lib defines
-#define LIB_NAME "VkSDK"
-#define MODULE_NAME "VkSDK"
-#define MODULE_PRIVATE_NAME "vksdk_private"
+#define LIB_NAME "VkBridge"
+#define MODULE_NAME "VkBridge"
+#define MODULE_PRIVATE_NAME "vkbridge_private"
 
 // include the Defold SDK
 #include <dmsdk/sdk.h>
@@ -17,12 +17,12 @@ typedef void (*BooleanMessage)(const int cb_id, const char *message_id, int mess
 
 extern "C"
 {
-    void VkSDKLibrary_RegisterCallbacks(ObjectMessage cb_obj,
+    void VkBridgeLibrary_RegisterCallbacks(ObjectMessage cb_obj,
                                         ObjectMessage cb_string,
                                         NoMessage cb_empty,
                                         NumberMessage cb_num,
                                         BooleanMessage cb_bool);
-    void VkSDKLibrary_RemoveCallbacks();
+    void VkBridgeLibrary_RemoveCallbacks();
 }
 
 struct PrivateListener
@@ -43,7 +43,7 @@ static bool CheckCallbackAndInstance(PrivateListener *cbk)
 {
     if (cbk->m_Callback == LUA_NOREF)
     {
-        dmLogInfo("VkSDKPrivate callback do not exist.");
+        dmLogInfo("VkBridgePrivate callback do not exist.");
         return false;
     }
     lua_State *L = cbk->m_L;
@@ -63,7 +63,7 @@ static bool CheckCallbackAndInstance(PrivateListener *cbk)
     if (!dmScript::IsInstanceValid(L))
     {
         UnregisterCallback(L, cbk);
-        dmLogError("Could not run VkSDKPrivate callback because the instance has been deleted.");
+        dmLogError("Could not run VkBridgePrivate callback because the instance has been deleted.");
         lua_pop(L, 2);
         assert(top == lua_gettop(L));
         return false;
@@ -304,7 +304,7 @@ static void UnregisterCallback(lua_State *L, PrivateListener *cbk)
         m_Listeners.EraseSwap(index);
         if (m_Listeners.Size() == 0)
         {
-            VkSDKLibrary_RemoveCallbacks();
+            VkBridgeLibrary_RemoveCallbacks();
         }
     }
     else
@@ -343,7 +343,7 @@ static int AddListener(lua_State *L)
         }
         if (m_Listeners.Size() == 1)
         {
-            VkSDKLibrary_RegisterCallbacks(SendObjectMessage,
+            VkBridgeLibrary_RegisterCallbacks(SendObjectMessage,
                                            SendStringMessage,
                                            SendEmptyMessage,
                                            SendNumMessage,
@@ -388,7 +388,7 @@ static void LuaInit(lua_State *L)
     assert(top == lua_gettop(L));
 }
 
-dmExtension::Result InitializeVkSDK(dmExtension::Params *params)
+dmExtension::Result InitializeVkBridge(dmExtension::Params *params)
 {
     // Init Lua
     LuaInit(params->m_L);
@@ -396,24 +396,24 @@ dmExtension::Result InitializeVkSDK(dmExtension::Params *params)
     return dmExtension::RESULT_OK;
 }
 
-dmExtension::Result FinalizeVkSDK(dmExtension::Params *params)
+dmExtension::Result FinalizeVkBridge(dmExtension::Params *params)
 {
     return dmExtension::RESULT_OK;
 }
 
 #else // unsupported platforms
 
-static dmExtension::Result InitializeVkSDK(dmExtension::Params *params)
+static dmExtension::Result InitializeVkBridge(dmExtension::Params *params)
 {
     dmLogInfo("Extension %s does not work for this platform\n", MODULE_NAME);
     return dmExtension::RESULT_OK;
 }
 
-static dmExtension::Result FinalizeVkSDK(dmExtension::Params *params)
+static dmExtension::Result FinalizeVkBridge(dmExtension::Params *params)
 {
     return dmExtension::RESULT_OK;
 }
 
 #endif
 
-DM_DECLARE_EXTENSION(VkSDK, LIB_NAME, 0, 0, InitializeVkSDK, 0, 0, FinalizeVkSDK)
+DM_DECLARE_EXTENSION(VkBridge, LIB_NAME, 0, 0, InitializeVkBridge, 0, 0, FinalizeVkBridge)

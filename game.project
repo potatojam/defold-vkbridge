@@ -9,8 +9,8 @@ width = 960
 height = 640
 
 [project]
-title = DefoldVkSdk
+title = DefoldVkBridge
 
 [library]
-include_dirs = vksdk
+include_dirs = vkbridge
 

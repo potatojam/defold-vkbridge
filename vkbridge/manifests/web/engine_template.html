@@ -3,25 +3,23 @@
 <head>
     <script type="text/javascript">
         (function (d) {
-            window.VkSDKLibrary_MsgQueue = [];
+            window.VkBridgeLibrary_MsgQueue = [];
             var send = function (cb_id, message_id, message) {
-                if (typeof VkSDKLibrary !== "undefined") {
-                    VkSDKLibrary.send(cb_id, message_id, message);
+                if (typeof VkBridgeLibrary !== "undefined") {
+                    VkBridgeLibrary.send(cb_id, message_id, message);
                 } else {
-                    VkSDKLibrary_MsgQueue.push([cb_id, message_id, message]);
+                    VkBridgeLibrary_MsgQueue.push([cb_id, message_id, message]);
                 }
             };
             var t = d.getElementsByTagName("script")[0];
             var s = d.createElement("script");
-            s.src = "https://vk.com/js/api/xd_connection.js?2";
+            s.src = "https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js";
             s.async = true;
             t.parentNode.insertBefore(s, t);
             s.onload = function () {
-                VK.init(function () {
-                    send(0, "init", ysdk);
-                }, function (err) {
-                    send(0, "error", err + "");
-                }, '5.131');
+                vkBridge.subscribe(e => console.log(e));
+                vkBridge.send('VKWebAppInit')
+                console.log('next')
             };
             s.onerror = function () {
                 send(0, "error", "Error loading VK SDK. Reload the page.");

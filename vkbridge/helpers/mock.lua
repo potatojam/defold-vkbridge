@@ -1,4 +1,4 @@
-local rxi_json = require("vksdk.helpers.json")
+local rxi_json = require("vkbridge.helpers.json")
 
 local M = {listeners = {}}
 
@@ -375,8 +375,8 @@ end
 
 return {
     enable = function()
-        if not vksdk_private then
-            vksdk_private = M
+        if not vkbridge_private then
+            vkbridge_private = M
 
             M.send(GLOBAL_CALLBACK_ID, "init")
         end
