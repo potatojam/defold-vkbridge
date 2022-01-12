@@ -1,9 +1,18 @@
 <html>
+
 <head>
     <script type="text/javascript">
         (function (d) {
-
+            window.VkSDKLibrary_MsgQueue = [];
+            var send = function (cb_id, message_id, message) {
+                if (typeof VkSDKLibrary !== "undefined") {
+                    VkSDKLibrary.send(cb_id, message_id, message);
+                } else {
+                    VkSDKLibrary_MsgQueue.push([cb_id, message_id, message]);
+                }
+            };
         })(document);
     </script>
 </head>
+
 </html>
