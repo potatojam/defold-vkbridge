@@ -1,4 +1,5 @@
-# Native extension template
-This template contains the basic setup for creation of a Defold native extension.
+# Vk SDK for Defold
 
-You can learn more about native extensions in the [official manual](https://www.defold.com/manuals/extensions/).
+Credits
+
+This project uses the source code of [YaGames](https://github.com/indiesoftby/defold-yagames).
