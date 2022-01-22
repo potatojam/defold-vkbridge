@@ -1,4 +1,3 @@
-// myextension.cpp
 // Extension lib defines
 #define LIB_NAME "VkBridge"
 #define MODULE_NAME "VkBridge"
@@ -8,7 +7,7 @@
 #include <dmsdk/sdk.h>
 #include <string.h>
 
-#if defined(DM_PLATFORM_HTML5)
+// #ifndef DM_PLATFORM_HTML5
 
 typedef void (*ObjectMessage)(const int cb_id, const char *message_id, const char *message);
 typedef void (*NoMessage)(const int cb_id, const char *message_id);
@@ -18,10 +17,10 @@ typedef void (*BooleanMessage)(const int cb_id, const char *message_id, int mess
 extern "C"
 {
     void VkBridgeLibrary_RegisterCallbacks(ObjectMessage cb_obj,
-                                        ObjectMessage cb_string,
-                                        NoMessage cb_empty,
-                                        NumberMessage cb_num,
-                                        BooleanMessage cb_bool);
+                                           ObjectMessage cb_string,
+                                           NoMessage cb_empty,
+                                           NumberMessage cb_num,
+                                           BooleanMessage cb_bool);
     void VkBridgeLibrary_RemoveCallbacks();
 }
 
@@ -344,10 +343,10 @@ static int AddListener(lua_State *L)
         if (m_Listeners.Size() == 1)
         {
             VkBridgeLibrary_RegisterCallbacks(SendObjectMessage,
-                                           SendStringMessage,
-                                           SendEmptyMessage,
-                                           SendNumMessage,
-                                           SendBoolMessage);
+                                              SendStringMessage,
+                                              SendEmptyMessage,
+                                              SendNumMessage,
+                                              SendBoolMessage);
         }
     }
     return 0;
@@ -401,19 +400,19 @@ dmExtension::Result FinalizeVkBridge(dmExtension::Params *params)
     return dmExtension::RESULT_OK;
 }
 
-#else // unsupported platforms
+// #else // unsupported platforms
 
-static dmExtension::Result InitializeVkBridge(dmExtension::Params *params)
-{
-    dmLogInfo("Extension %s does not work for this platform\n", MODULE_NAME);
-    return dmExtension::RESULT_OK;
-}
+// static dmExtension::Result InitializeVkBridge(dmExtension::Params *params)
+// {
+//     dmLogInfo("Extension %s does not work for this platform\n", MODULE_NAME);
+//     return dmExtension::RESULT_OK;
+// }
 
-static dmExtension::Result FinalizeVkBridge(dmExtension::Params *params)
-{
-    return dmExtension::RESULT_OK;
-}
+// static dmExtension::Result FinalizeVkBridge(dmExtension::Params *params)
+// {
+//     return dmExtension::RESULT_OK;
+// }
 
-#endif
+// #endif
 
 DM_DECLARE_EXTENSION(VkBridge, LIB_NAME, 0, 0, InitializeVkBridge, 0, 0, FinalizeVkBridge)

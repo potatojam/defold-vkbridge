@@ -17,9 +17,44 @@
             s.async = true;
             t.parentNode.insertBefore(s, t);
             s.onload = function () {
-                vkBridge.subscribe(e => console.log(e));
-                vkBridge.send('VKWebAppInit')
-                console.log('next')
+                vkBridge.subscribe(response => {
+                    console.log("Subscribe response", response)
+                    if (response.detail.type === "VKWebAppInitResult") {
+                        if (response.detail.data.result) {
+                            console.log('init vkBridge')
+                        } else {
+                            console.log('error vkBridge')
+                        }
+                    }
+                });
+                vkBridge.send('VKWebAppInit').then(function (response) {
+                    if (response.result) {
+                        console.log('Send init vkBridge')
+                        setTimeout(function () {
+                            send(0, "init", vkBridge);
+                        }, 1000)
+                    } else {
+                        console.log('Send error vkBridge')
+                        send(0, "error", err);
+                    }
+                }).catch(function (err) {
+                    console.log('Send error vkBridge')
+                    send(0, "error", err);
+                });
+
+                // setTimeout(() => {
+                //     vkBridge
+                //         .send('VKWebAppGetEmail')
+                //         .then(data => {
+                //             // Handling received data
+                //             console.log(data.email);
+                //         })
+                //         .catch(error => {
+                //             // Handling an error
+                //             console.log("error", error);
+                //         });
+                // }, 1000)
+
             };
             s.onerror = function () {
                 send(0, "error", "Error loading VK SDK. Reload the page.");

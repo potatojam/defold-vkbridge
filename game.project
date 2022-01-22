@@ -14,3 +14,8 @@ title = DefoldVkBridge
 [library]
 include_dirs = vkbridge
 
+[html5]
+show_made_with_defold = 0
+show_fullscreen_button = 0
+scale_mode = fit
+

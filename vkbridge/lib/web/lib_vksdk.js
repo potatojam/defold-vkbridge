@@ -1,6 +1,6 @@
 var LibVkBridge = {
     $VkBridgeLibrary: {
-        _ysdk: null,
+        _vkBridge: null,
         _lb: null,
         _payments: null,
         _player: null,
@@ -28,7 +28,7 @@ var LibVkBridge = {
             if (VkBridgeLibrary._callback_object) {
                 // 0 and 1 are reserved IDs
                 if (cb_id == 0 && message_id == "init") {
-                    VkBridgeLibrary._ysdk = message;
+                    VkBridgeLibrary._vkBridge = message;
                     message = undefined;
                 }
 
@@ -38,25 +38,25 @@ var LibVkBridge = {
                 }
                 switch (typeof message) {
                     case "undefined":
-                        { { { makeDynCall("vii", "VkBridgeLibrary._callback_empty") } } } (cb_id, cmsg_id);
+                        {{{ makeDynCall("vii", "VkBridgeLibrary._callback_empty") }}}(cb_id, cmsg_id);
                         break;
                     case "number":
-                        { { { makeDynCall("viif", "VkBridgeLibrary._callback_number") } } } (cb_id, cmsg_id, message);
+                        {{{ makeDynCall("viif", "VkBridgeLibrary._callback_number") }}}(cb_id, cmsg_id, message);
                         break;
                     case "string":
                         var msg = allocate(intArrayFromString(message), "i8", ALLOC_NORMAL);
-                        { { { makeDynCall("viii", "VkBridgeLibrary._callback_string") } } } (cb_id, cmsg_id, msg);
+                        {{{ makeDynCall("viii", "VkBridgeLibrary._callback_string") }}}(cb_id, cmsg_id, msg);
                         Module._free(msg);
                         break;
                     case "object":
                         var msg = JSON.stringify(message);
                         msg = allocate(intArrayFromString(msg), "i8", ALLOC_NORMAL);
-                        { { { makeDynCall("viii", "VkBridgeLibrary._callback_object") } } } (cb_id, cmsg_id, msg);
+                        {{{ makeDynCall("viii", "VkBridgeLibrary._callback_object") }}}(cb_id, cmsg_id, msg);
                         Module._free(msg);
                         break;
                     case "boolean":
                         var msg = message ? 1 : 0;
-                        { { { makeDynCall("viii", "VkBridgeLibrary._callback_bool") } } } (cb_id, cmsg_id, msg);
+                        {{{ makeDynCall("viii", "VkBridgeLibrary._callback_bool") }}}(cb_id, cmsg_id, msg);
                         break;
                     default:
                         console.warn("Unsupported message format: " + typeof message);

@@ -46,7 +46,11 @@ function M.wrap_for_promise(then_callback)
 end
 
 function M.async_call(cb)
-    timer.delay(0, false, cb)
+    if cb then
+        timer.delay(0, false, function()
+            cb()
+        end)
+    end
 end
 
 return M
