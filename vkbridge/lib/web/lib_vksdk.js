@@ -38,25 +38,25 @@ var LibVkBridge = {
                 }
                 switch (typeof message) {
                     case "undefined":
-                        {{{ makeDynCall("vii", "VkBridgeLibrary._callback_empty") }}}(cb_id, cmsg_id);
+                        {{{ makeDynCall("vii", "VkBridgeLibrary._callback_empty") }}} (cb_id, cmsg_id);
                         break;
                     case "number":
-                        {{{ makeDynCall("viif", "VkBridgeLibrary._callback_number") }}}(cb_id, cmsg_id, message);
+                        {{{ makeDynCall("viif", "VkBridgeLibrary._callback_number") }}} (cb_id, cmsg_id, message);
                         break;
                     case "string":
                         var msg = allocate(intArrayFromString(message), "i8", ALLOC_NORMAL);
-                        {{{ makeDynCall("viii", "VkBridgeLibrary._callback_string") }}}(cb_id, cmsg_id, msg);
+                        {{{ makeDynCall("viii", "VkBridgeLibrary._callback_string") }}} (cb_id, cmsg_id, msg);
                         Module._free(msg);
                         break;
                     case "object":
                         var msg = JSON.stringify(message);
                         msg = allocate(intArrayFromString(msg), "i8", ALLOC_NORMAL);
-                        {{{ makeDynCall("viii", "VkBridgeLibrary._callback_object") }}}(cb_id, cmsg_id, msg);
+                        {{{ makeDynCall("viii", "VkBridgeLibrary._callback_object") }}} (cb_id, cmsg_id, msg);
                         Module._free(msg);
                         break;
                     case "boolean":
                         var msg = message ? 1 : 0;
-                        {{{ makeDynCall("viii", "VkBridgeLibrary._callback_bool") }}}(cb_id, cmsg_id, msg);
+                        {{{ makeDynCall("viii", "VkBridgeLibrary._callback_bool") }}} (cb_id, cmsg_id, msg);
                         break;
                     default:
                         console.warn("Unsupported message format: " + typeof message);
@@ -110,6 +110,31 @@ var LibVkBridge = {
         self._callback_bool = null;
     },
 
+    VkBridgeLibrary_Send: function (cb_id, name, params) {
+        var self = VkBridgeLibrary;
+        try {
+            var json_params = undefined;
+            if (params) {
+                json_params = self.parseJson(UTF8ToString(params));
+            }
+            var method = UTF8ToString(name)
+            console.log(method, json_params)
+            self._vkBridge.send(method, json_params)
+                .then((result) => {
+                    if (result) {
+                        self.send(cb_id, null, JSON.stringify(result));
+                    } else {
+                        self.send(cb_id);
+                    }
+
+                })
+                .catch((err) => {
+                    self.send(cb_id, self.toErrStr(err));
+                });
+        } catch (err) {
+            self.delaySend(cb_id, self.toErrStr(err));
+        }
+    },
 };
 
 autoAddDeps(LibVkBridge, "$VkBridgeLibrary");

@@ -8,6 +8,9 @@ function init(self)
             pprint("Vk inited")
         end
     end)
+    vkbridge.send("VKWebAppGetEmail", {hello = "aaa"}, function (self, err, data)
+        pprint("complete", self, err, data)
+    end)
 end
 
 function final(self)

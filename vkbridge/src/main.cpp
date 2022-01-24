@@ -22,6 +22,7 @@ extern "C"
                                            NumberMessage cb_num,
                                            BooleanMessage cb_bool);
     void VkBridgeLibrary_RemoveCallbacks();
+    void VkBridgeLibrary_Send(const int cb_id, const char *name, const char *cdata);
 }
 
 struct PrivateListener
@@ -369,11 +370,25 @@ static int RemoveListener(lua_State *L)
     return 0;
 }
 
+static int Bridge_Send(lua_State *L)
+{
+    if (lua_isstring(L, 3))
+    {
+        VkBridgeLibrary_Send(luaL_checkint(L, 1), luaL_checkstring(L, 2), luaL_checkstring(L, 3));
+    }
+    else
+    {
+        VkBridgeLibrary_Send(luaL_checkint(L, 1), luaL_checkstring(L, 2), 0);
+    }
+    return 0;
+}
+
 // Functions exposed to Lua
 static const luaL_reg Module_methods[] =
     {
         {"add_listener", AddListener},
         {"remove_listener", RemoveListener},
+        {"bridge_send", Bridge_Send},
         {0, 0}};
 
 static void LuaInit(lua_State *L)

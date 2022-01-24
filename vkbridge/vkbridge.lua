@@ -38,8 +38,8 @@ end
 -- PUBLIC API
 --
 
---- Initialize the Yandex.Games SDK
--- @tparam function callback
+---Initialize the Vk Bridge
+---@param callback function
 function M.init(callback)
     if not vkbridge_private then
         print("VkBridge is only available on the HTML5 platform. You will use the mocked version that is suitable only for testing.")
@@ -56,6 +56,13 @@ function M.init(callback)
 
     init_callback = callback
     vkbridge_private.add_listener(helper.VKBRIDGE_INIT_ID, init_listener)
+end
+
+function M.send(name, data, callback)
+    assert(type(name) == "string")
+    assert(type(callback) == "function")
+
+    vkbridge_private.bridge_send(helper.wrap_for_promise(callback), name, data and rxi_json.encode(data) or nil)
 end
 
 return M

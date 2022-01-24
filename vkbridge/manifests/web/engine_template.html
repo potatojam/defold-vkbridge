@@ -42,19 +42,6 @@
                     send(0, "error", err);
                 });
 
-                // setTimeout(() => {
-                //     vkBridge
-                //         .send('VKWebAppGetEmail')
-                //         .then(data => {
-                //             // Handling received data
-                //             console.log(data.email);
-                //         })
-                //         .catch(error => {
-                //             // Handling an error
-                //             console.log("error", error);
-                //         });
-                // }, 1000)
-
             };
             s.onerror = function () {
                 send(0, "error", "Error loading VK SDK. Reload the page.");
