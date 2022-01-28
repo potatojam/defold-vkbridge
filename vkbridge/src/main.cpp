@@ -47,8 +47,9 @@ static int Bridge_Send(lua_State *L)
 
 static int Supports(lua_State *L)
 {
-    lua_pushboolean(L, VkBridgeLibrary_Supports(luaL_checkstring(L, 1)));
-    return 0;
+    bool result = VkBridgeLibrary_Supports(luaL_checkstring(L, 1));
+    lua_pushboolean(L, result);
+    return 1;
 }
 
 static int IsWebView(lua_State *L)

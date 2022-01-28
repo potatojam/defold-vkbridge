@@ -132,7 +132,8 @@ var LibVkBridge = {
 
     VkBridgeLibrary_Supports: function (name) {
         var method = UTF8ToString(name)
-        return VkBridgeLibrary._vkBridge.supports(method);
+        var result = VkBridgeLibrary._vkBridge.supports(method);
+        return result
     },
 
     VkBridgeLibrary_isWebView: function () {
