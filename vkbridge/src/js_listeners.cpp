@@ -44,6 +44,7 @@ void SendObjectMessage(const int cb_id, const char *message_id, const char *mess
         lua_State *L = cbk->m_L;
         int top = lua_gettop(L);
         bool is_fail = false;
+        if (cbk->m_OnlyId == cb_id && CheckCallbackAndInstance(cbk))
         {
             lua_pushinteger(L, cb_id);
             if (message_id)

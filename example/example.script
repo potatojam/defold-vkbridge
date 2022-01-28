@@ -1,6 +1,11 @@
 local vkbridge = require "vkbridge.vkbridge"
 
+local function on_subscribe(self, response)
+    pprint("subscribe", response)
+end
+
 function init(self)
+    vkbridge.subscribe(on_subscribe)
     vkbridge.init(function(self, err)
         if err then
             pprint("VK init error", err)

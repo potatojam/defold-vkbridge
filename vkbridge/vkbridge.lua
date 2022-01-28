@@ -1,12 +1,13 @@
 local rxi_json = require("vkbridge.helpers.json")
 local mock = require("vkbridge.helpers.mock")
 local helper = require("vkbridge.helpers.helper")
+local listeners = require("vkbridge.helpers.listeners")
 
 --
 -- HELPERS
 --
 
-local M = {vkbridge_ready = false, leaderboards_ready = false, payments_ready = false, player_ready = false, banner_ready = false}
+local M = {vkbridge_ready = false}
 
 local init_callback = nil
 
@@ -35,7 +36,7 @@ local function init_listener(self, cb_id, message_id, message)
 end
 
 local function on_any_event(self, cb_id, message_id, message)
-    pprint("on_any_event", message_id, message)
+    listeners.invoke(self, message)
 end
 
 --
@@ -74,6 +75,18 @@ function M.send(name, data, callback)
         end
         callback(self, err, result)
     end), name, data and rxi_json.encode(data) or nil)
+end
+
+function M.subscribe(callback)
+    assert(type(callback) == "function")
+
+    listeners.add_listener(callback)
+end
+
+function M.unsubscribe(callback)
+    assert(type(callback) == "function")
+
+    listeners.remove_listener(callback)
 end
 
 function M.supports(name)
