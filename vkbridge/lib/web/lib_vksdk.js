@@ -1,11 +1,6 @@
 var LibVkBridge = {
     $VkBridgeLibrary: {
         _vkBridge: null,
-        _lb: null,
-        _payments: null,
-        _player: null,
-        _context: null,
-
         _callback_object: null,
         _callback_string: null,
         _callback_empty: null,
