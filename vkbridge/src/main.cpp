@@ -13,8 +13,12 @@
 extern "C"
 {
     void VkBridgeLibrary_Send(const int cb_id, const char *name, const char *cdata);
+    const bool VkBridgeLibrary_Supports(const char *name);
+    const bool VkBridgeLibrary_isWebView();
+    const bool VkBridgeLibrary_isStandalone();
+    const bool VkBridgeLibrary_isEmbedded();
+    const bool VkBridgeLibrary_isIframe();
 }
-
 
 static int AddListener(lua_State *L)
 {
@@ -27,7 +31,6 @@ static int RemoveListener(lua_State *L)
     RemoveEventListener(L);
     return 0;
 }
-
 
 static int Bridge_Send(lua_State *L)
 {
@@ -42,12 +45,47 @@ static int Bridge_Send(lua_State *L)
     return 0;
 }
 
+static int Supports(lua_State *L)
+{
+    lua_pushboolean(L, VkBridgeLibrary_Supports(luaL_checkstring(L, 1)));
+    return 0;
+}
+
+static int IsWebView(lua_State *L)
+{
+    lua_pushboolean(L, VkBridgeLibrary_isWebView());
+    return 1;
+}
+
+static int IsStandalone(lua_State *L)
+{
+    lua_pushboolean(L, VkBridgeLibrary_isStandalone());
+    return 1;
+}
+
+static int IsIframe(lua_State *L)
+{
+    lua_pushboolean(L, VkBridgeLibrary_isIframe());
+    return 1;
+}
+
+static int IsEmbedded(lua_State *L)
+{
+    lua_pushboolean(L, VkBridgeLibrary_isEmbedded());
+    return 1;
+}
+
 // Functions exposed to Lua
 static const luaL_reg Module_methods[] =
     {
         {"add_listener", AddListener},
         {"remove_listener", RemoveListener},
-        {"bridge_send", Bridge_Send},
+        {"send", Bridge_Send},
+        {"supports", Supports},
+        {"is_webview", IsWebView},
+        {"is_standalone", IsStandalone},
+        {"is_iframe", IsIframe},
+        {"is_embedded", IsEmbedded},
         {0, 0}};
 
 static void LuaInit(lua_State *L)

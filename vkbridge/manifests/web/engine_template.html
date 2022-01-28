@@ -30,9 +30,7 @@
                 vkBridge.send('VKWebAppInit').then(function (response) {
                     if (response.result) {
                         console.log('Send init vkBridge')
-                        setTimeout(function () {
-                            send(0, "init", vkBridge);
-                        }, 1000)
+                        send(0, "init", vkBridge);
                     } else {
                         console.log('Send error vkBridge')
                         send(0, "error", err);

@@ -121,7 +121,6 @@ var LibVkBridge = {
                     } else {
                         self.send(cb_id);
                     }
-
                 })
                 .catch((err) => {
                     self.send(cb_id, self.toErrStr(err));
@@ -129,6 +128,27 @@ var LibVkBridge = {
         } catch (err) {
             self.delaySend(cb_id, self.toErrStr(err));
         }
+    },
+
+    VkBridgeLibrary_Supports: function (name) {
+        var method = UTF8ToString(name)
+        return VkBridgeLibrary._vkBridge.supports(method);
+    },
+
+    VkBridgeLibrary_isWebView: function () {
+        return VkBridgeLibrary._vkBridge.isWebView();
+    },
+
+    VkBridgeLibrary_isStandalone: function () {
+        return VkBridgeLibrary._vkBridge.isStandalone();
+    },
+
+    VkBridgeLibrary_isEmbedded: function () {
+        return VkBridgeLibrary._vkBridge.isEmbedded();
+    },
+
+    VkBridgeLibrary_isIframe: function () {
+        return VkBridgeLibrary._vkBridge.isIframe();
     },
 };
 

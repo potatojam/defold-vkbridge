@@ -8,9 +8,17 @@ function init(self)
             pprint("Vk inited")
         end
     end)
-    vkbridge.send("VKWebAppGetEmail", {hello = "aaa"}, function (self, err, data)
-        pprint("complete", self, err, data)
+    timer.delay(1, false, function ()
+        vkbridge.send("VKWebAppGetEmail", {hello = "aaa"}, function (self, err, data)
+            pprint("VKWebAppGetEmail complete", self, err, data)
+        end)
+        pprint(vkbridge.supports("VKWebAppGetEmail"))
+        pprint(vkbridge.is_embedded())
+        pprint(vkbridge.is_standalone())
+        pprint(vkbridge.is_iframe())
+        pprint(vkbridge.is_webview())
     end)
+    
 end
 
 function final(self)

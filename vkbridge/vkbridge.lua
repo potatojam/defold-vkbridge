@@ -62,7 +62,34 @@ function M.send(name, data, callback)
     assert(type(name) == "string")
     assert(type(callback) == "function")
 
-    vkbridge_private.bridge_send(helper.wrap_for_promise(callback), name, data and rxi_json.encode(data) or nil)
+    vkbridge_private.send(helper.wrap_for_promise(function(self, err, result)
+        if result then
+            result = rxi_json.decode(result)
+        end
+        callback(self, err, result)
+    end), name, data and rxi_json.encode(data) or nil)
+end
+
+function M.supports(name)
+    assert(type(name) == "string")
+
+    vkbridge_private.supports(name)
+end
+
+function M.is_webview()
+    return vkbridge_private.is_webview()
+end
+
+function M.is_standalone()
+    return vkbridge_private.is_standalone()
+end
+
+function M.is_iframe()
+    return vkbridge_private.is_iframe()
+end
+
+function M.is_embedded()
+    return vkbridge_private.is_embedded()
 end
 
 return M
