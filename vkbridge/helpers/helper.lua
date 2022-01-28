@@ -2,10 +2,10 @@ local M = {}
 
 -- constants
 M.VKBRIDGE_INIT_ID = 0
-M.VKCONTEXT_INIT_ID = 1
+M.VKBRIDGE_SUBSCRIBE_ID = 1
 
 -- private
-local cb_id_counter = 2
+local cb_id_counter = 3
 local function next_cb_id()
     local id = cb_id_counter
     cb_id_counter = (cb_id_counter + 1) % 2147483647

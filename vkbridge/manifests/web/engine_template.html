@@ -3,6 +3,9 @@
 <head>
     <script type="text/javascript">
         (function (d) {
+            var VKBRIDGE_INIT_ID = 0
+            var VKBRIDGE_SUBSCRIBE_ID = 1
+
             window.VkBridgeLibrary_MsgQueue = [];
             var send = function (cb_id, message_id, message) {
                 if (typeof VkBridgeLibrary !== "undefined") {
@@ -18,31 +21,22 @@
             t.parentNode.insertBefore(s, t);
             s.onload = function () {
                 vkBridge.subscribe(response => {
-                    console.log("Subscribe response", response)
-                    if (response.detail.type === "VKWebAppInitResult") {
-                        if (response.detail.data.result) {
-                            console.log('init vkBridge')
-                        } else {
-                            console.log('error vkBridge')
-                        }
-                    }
+                    send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", response);
                 });
+                // Initialize vkBridge
                 vkBridge.send('VKWebAppInit').then(function (response) {
                     if (response.result) {
-                        console.log('Send init vkBridge')
-                        send(0, "init", vkBridge);
+                        send(VKBRIDGE_INIT_ID, "init", vkBridge);
                     } else {
-                        console.log('Send error vkBridge')
-                        send(0, "error", err);
+                        send(VKBRIDGE_INIT_ID, "error", err);
                     }
                 }).catch(function (err) {
-                    console.log('Send error vkBridge')
-                    send(0, "error", err);
+                    send(VKBRIDGE_INIT_ID, "error", err);
                 });
 
             };
             s.onerror = function () {
-                send(0, "error", "Error loading VK SDK. Reload the page.");
+                send(VKBRIDGE_INIT_ID, "error", "Error loading VK SDK. Reload the page.");
             };
         })(document);
     </script>

@@ -37,5 +37,6 @@ void SendNumMessage(const int cb_id, const char *message_id, float message);
 void SendBoolMessage(const int cb_id, const char *message_id, int message);
 void AddEventListener(lua_State *L);
 void RemoveEventListener(lua_State *L);
+void RegisterCallbacks();
 
 static dmArray<PrivateListener> m_Listeners;

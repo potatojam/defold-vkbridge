@@ -44,7 +44,6 @@ void SendObjectMessage(const int cb_id, const char *message_id, const char *mess
         lua_State *L = cbk->m_L;
         int top = lua_gettop(L);
         bool is_fail = false;
-        if (cbk->m_OnlyId == cb_id && CheckCallbackAndInstance(cbk))
         {
             lua_pushinteger(L, cb_id);
             if (message_id)
@@ -306,14 +305,6 @@ void AddEventListener(lua_State *L)
         {
             dmLogError("Can't register a callback again. Callback has been registered before.");
         }
-        if (m_Listeners.Size() == 1)
-        {
-            VkBridgeLibrary_RegisterCallbacks(SendObjectMessage,
-                                              SendStringMessage,
-                                              SendEmptyMessage,
-                                              SendNumMessage,
-                                              SendBoolMessage);
-        }
     }
 }
 
@@ -331,4 +322,13 @@ void RemoveEventListener(lua_State *L)
     cbk.m_Self = dmScript::Ref(L, LUA_REGISTRYINDEX);
 
     UnregisterCallback(L, &cbk);
+}
+
+void RegisterCallbacks()
+{
+    VkBridgeLibrary_RegisterCallbacks(SendObjectMessage,
+                                      SendStringMessage,
+                                      SendEmptyMessage,
+                                      SendNumMessage,
+                                      SendBoolMessage);
 }

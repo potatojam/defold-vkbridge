@@ -32,6 +32,12 @@ static int RemoveListener(lua_State *L)
     return 0;
 }
 
+static int InitCallbacks(lua_State *L)
+{
+    RegisterCallbacks();
+    return 0;
+}
+
 static int Bridge_Send(lua_State *L)
 {
     if (lua_isstring(L, 3))
@@ -81,6 +87,7 @@ static const luaL_reg Module_methods[] =
     {
         {"add_listener", AddListener},
         {"remove_listener", RemoveListener},
+        {"init_callbacks", InitCallbacks},
         {"send", Bridge_Send},
         {"supports", Supports},
         {"is_webview", IsWebView},

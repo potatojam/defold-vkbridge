@@ -34,6 +34,10 @@ local function init_listener(self, cb_id, message_id, message)
     vkbridge_private.remove_listener(init_listener)
 end
 
+local function on_any_event(self, cb_id, message_id, message)
+    pprint("on_any_event", message_id, message)
+end
+
 --
 -- PUBLIC API
 --
@@ -56,6 +60,8 @@ function M.init(callback)
 
     init_callback = callback
     vkbridge_private.add_listener(helper.VKBRIDGE_INIT_ID, init_listener)
+    vkbridge_private.add_listener(helper.VKBRIDGE_SUBSCRIBE_ID, on_any_event)
+    vkbridge_private.init_callbacks()
 end
 
 function M.send(name, data, callback)

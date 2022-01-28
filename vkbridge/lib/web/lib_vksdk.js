@@ -113,7 +113,6 @@ var LibVkBridge = {
                 json_params = self.parseJson(UTF8ToString(params));
             }
             var method = UTF8ToString(name)
-            console.log(method, json_params)
             self._vkBridge.send(method, json_params)
                 .then((result) => {
                     if (result) {
