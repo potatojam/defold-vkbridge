@@ -2,8 +2,6 @@
 #include <string.h>
 #include <js_listeners.h>
 
-// #ifndef DM_PLATFORM_HTML5
-
 bool CheckCallbackAndInstance(PrivateListener *cbk)
 {
     if (cbk->m_Callback == LUA_NOREF)

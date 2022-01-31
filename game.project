@@ -10,6 +10,7 @@ height = 640
 
 [project]
 title = DefoldVkBridge
+dependencies#0 = https://github.com/andsve/dirtylarry/archive/master.zip
 
 [library]
 include_dirs = vkbridge
@@ -18,4 +19,7 @@ include_dirs = vkbridge
 show_made_with_defold = 0
 show_fullscreen_button = 0
 scale_mode = fit
+
+[vk_bridge]
+auto_init = true
 

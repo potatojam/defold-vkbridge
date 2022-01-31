@@ -61,8 +61,8 @@ var LibVkBridge = {
                 }
             } else {
                 // console.warn("You didn't set callback for VkBridgeLibrary");
-                if (typeof VkBridgeLibrary_MsgQueue !== "undefined") {
-                    VkBridgeLibrary_MsgQueue.push([cb_id, message_id, message]);
+                if (typeof VkBridgeHelper !== "undefined") {
+                    VkBridgeHelper.msgQueue.push([cb_id, message_id, message]);
                 }
             }
         },
@@ -89,8 +89,8 @@ var LibVkBridge = {
         self._callback_number = callback_number;
         self._callback_bool = callback_bool;
 
-        while (typeof VkBridgeLibrary_MsgQueue !== "undefined" && VkBridgeLibrary_MsgQueue.length) {
-            var m = VkBridgeLibrary_MsgQueue.shift();
+        while (typeof VkBridgeHelper !== "undefined" && VkBridgeHelper.msgQueue.length) {
+            var m = VkBridgeHelper.msgQueue.shift();
             self.send(m[0], m[1], m[2]);
         }
     },
@@ -103,6 +103,12 @@ var LibVkBridge = {
         self._callback_empty = null;
         self._callback_number = null;
         self._callback_bool = null;
+    },
+
+    VkBridgeLibrary_Init: function () {
+        if (typeof VkBridgeHelper !== "undefined" && !VkBridgeHelper.autoInit) {
+            VkBridgeHelper.init();
+        }
     },
 
     VkBridgeLibrary_Send: function (cb_id, name, params) {

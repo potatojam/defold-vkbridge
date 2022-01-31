@@ -15,24 +15,6 @@ local function next_cb_id()
     return id
 end
 
-function M.wrap_for_callbacks(callbacks)
-    local cb_id = next_cb_id()
-    local listener
-    listener = function(self, _cb_id, message_id, message)
-        -- print("*** _CB_ID", _cb_id, " = CB_ID", cb_id, "MESSAGE_ID", message_id, "MESSAGE", message)
-        if message_id == "close" then
-            vkbridge_private.remove_listener(listener)
-        end
-
-        if callbacks[message_id] ~= nil then
-            callbacks[message_id](self, message)
-        end
-    end
-
-    vkbridge_private.add_listener(cb_id, listener)
-    return cb_id
-end
-
 function M.wrap_for_promise(then_callback)
     local cb_id = next_cb_id()
     local listener

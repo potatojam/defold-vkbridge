@@ -3,15 +3,16 @@
 #define MODULE_NAME "VkBridge"
 #define MODULE_PRIVATE_NAME "vkbridge_private"
 
-// include the Defold SDK
 #include <dmsdk/sdk.h>
+
+#ifdef DM_PLATFORM_HTML5
+
 #include <string.h>
 #include <js_listeners.h>
 
-// #ifndef DM_PLATFORM_HTML5
-
 extern "C"
 {
+    void VkBridgeLibrary_Init();
     void VkBridgeLibrary_Send(const int cb_id, const char *name, const char *cdata);
     const bool VkBridgeLibrary_Supports(const char *name);
     const bool VkBridgeLibrary_isWebView();
@@ -34,6 +35,7 @@ static int RemoveListener(lua_State *L)
 
 static int InitCallbacks(lua_State *L)
 {
+    VkBridgeLibrary_Init();
     RegisterCallbacks();
     return 0;
 }
@@ -120,19 +122,19 @@ dmExtension::Result FinalizeVkBridge(dmExtension::Params *params)
     return dmExtension::RESULT_OK;
 }
 
-// #else // unsupported platforms
+#else // unsupported platforms
 
-// static dmExtension::Result InitializeVkBridge(dmExtension::Params *params)
-// {
-//     dmLogInfo("Extension %s does not work for this platform\n", MODULE_NAME);
-//     return dmExtension::RESULT_OK;
-// }
+static dmExtension::Result InitializeVkBridge(dmExtension::Params *params)
+{
+    dmLogInfo("Extension %s does not work for this platform\n", MODULE_NAME);
+    return dmExtension::RESULT_OK;
+}
 
-// static dmExtension::Result FinalizeVkBridge(dmExtension::Params *params)
-// {
-//     return dmExtension::RESULT_OK;
-// }
+static dmExtension::Result FinalizeVkBridge(dmExtension::Params *params)
+{
+    return dmExtension::RESULT_OK;
+}
 
-// #endif
+#endif
 
 DM_DECLARE_EXTENSION(VkBridge, LIB_NAME, 0, 0, InitializeVkBridge, 0, 0, FinalizeVkBridge)

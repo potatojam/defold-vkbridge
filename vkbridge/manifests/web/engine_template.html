@@ -6,38 +6,52 @@
             var VKBRIDGE_INIT_ID = 0
             var VKBRIDGE_SUBSCRIBE_ID = 1
 
-            window.VkBridgeLibrary_MsgQueue = [];
+            window.VkBridgeHelper = {};
+            var VkBridgeHelper = window.VkBridgeHelper
+
+            VkBridgeHelper.msgQueue = [];
             var send = function (cb_id, message_id, message) {
                 if (typeof VkBridgeLibrary !== "undefined") {
                     VkBridgeLibrary.send(cb_id, message_id, message);
                 } else {
-                    VkBridgeLibrary_MsgQueue.push([cb_id, message_id, message]);
+                    VkBridgeHelper.msgQueue.push([cb_id, message_id, message]);
                 }
             };
-            var t = d.getElementsByTagName("script")[0];
-            var s = d.createElement("script");
-            s.src = "https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js";
-            s.async = true;
-            t.parentNode.insertBefore(s, t);
-            s.onload = function () {
-                vkBridge.subscribe(response => {
-                    send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", response);
-                });
-                // Initialize vkBridge
-                vkBridge.send('VKWebAppInit').then(function (response) {
-                    if (response.result) {
-                        send(VKBRIDGE_INIT_ID, "init", vkBridge);
-                    } else {
-                        send(VKBRIDGE_INIT_ID, "error", err);
-                    }
-                }).catch(function (err) {
-                    send(VKBRIDGE_INIT_ID, "error", err);
-                });
 
-            };
-            s.onerror = function () {
-                send(VKBRIDGE_INIT_ID, "error", "Error loading VK SDK. Reload the page.");
-            };
+            VkBridgeHelper.init = function () {
+                var t = d.getElementsByTagName("script")[0];
+                var s = d.createElement("script");
+                s.src = "https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js";
+                s.async = true;
+                t.parentNode.insertBefore(s, t);
+                s.onload = function () {
+                    vkBridge.subscribe(response => {
+                        send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", response);
+                    });
+                    // Initialize vkBridge
+                    vkBridge.send('VKWebAppInit').then(function (response) {
+                        if (response.result) {
+                            send(VKBRIDGE_INIT_ID, "init", vkBridge);
+                        } else {
+                            send(VKBRIDGE_INIT_ID, "error", err);
+                        }
+                    }).catch(function (err) {
+                        send(VKBRIDGE_INIT_ID, "error", err);
+                    });
+
+                };
+                s.onerror = function () {
+                    send(VKBRIDGE_INIT_ID, "error", "Error loading VK SDK. Reload the page.");
+                };
+            }
+
+            VkBridgeHelper.autoInit = true;
+            // {{#vk_bridge.auto_init}}
+            VkBridgeHelper.autoInit = {{{vk_bridge.auto_init}}};
+            // {{/vk_bridge.auto_init}}
+            if (VkBridgeHelper.autoInit) {
+                VkBridgeHelper.init();
+            }
         })(document);
     </script>
 </head>
