@@ -1,11 +1,11 @@
-local vkbridge = require "vkbridge.vkbridge"
+local vkbridge = require("vkbridge.vkbridge")
+local dirtylarry = require("dirtylarry/dirtylarry")
 
 local function on_subscribe(self, response)
     pprint("subscribe", response)
 end
 
-function init(self)
-    vkbridge.subscribe(on_subscribe)
+local function init_vk()
     vkbridge.init(function(self, err)
         if err then
             pprint("VK init error", err)
@@ -13,7 +13,14 @@ function init(self)
             pprint("Vk inited")
         end
     end)
-    timer.delay(1, false, function ()
+end
+
+function init(self)
+    msg.post(".", "acquire_input_focus")
+    vkbridge.subscribe(on_subscribe)
+
+    
+    timer.delay(1, false, function()
         -- vkbridge.send("VKWebAppGetEmail", {hello = "aaa"}, function (self, err, data)
         --     pprint("VKWebAppGetEmail complete", self, err, data)
         -- end)
@@ -23,30 +30,8 @@ function init(self)
         -- pprint(vkbridge.is_iframe())
         -- pprint(vkbridge.is_webview())
     end)
-    
-end
-
-function final(self)
-    -- Add finalization code here
-    -- Remove this function if not needed
-end
-
-function update(self, dt)
-    -- Add update code here
-    -- Remove this function if not needed
-end
-
-function on_message(self, message_id, message, sender)
-    -- Add message-handling code here
-    -- Remove this function if not needed
 end
 
 function on_input(self, action_id, action)
-    -- Add input-handling code here
-    -- Remove this function if not needed
-end
-
-function on_reload(self)
-    -- Add reload-handling code here
-    -- Remove this function if not needed
+    dirtylarry:button("btn_init", action_id, action, init_vk)
 end

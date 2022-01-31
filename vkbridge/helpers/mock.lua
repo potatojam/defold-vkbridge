@@ -36,6 +36,10 @@ function M.remove_listener(listener)
     end
 end
 
+function M.init_callbacks()
+
+end
+
 --
 -- Yandex Games SDK
 --
@@ -74,20 +78,15 @@ function M.device_info_is_tablet()
 end
 
 function M.environment()
-    return '{"app":{"id":"1"},"payload":"test","i18n":{"tld":"en","lang":"en"},"browser":{"lang":"en"}}'
+    return "{\"app\":{\"id\":\"1\"},\"payload\":\"test\",\"i18n\":{\"tld\":\"en\",\"lang\":\"en\"},\"browser\":{\"lang\":\"en\"}}"
 end
 
 function M.feedback_can_review(cb_id)
-    M.send(cb_id, NO_ERR, rxi_json.encode({
-        value = false,
-        reason = "UNKNOWN"
-    }))
+    M.send(cb_id, NO_ERR, rxi_json.encode({value = false, reason = "UNKNOWN"}))
 end
 
 function M.feedback_request_review(cb_id)
-    M.send(cb_id, NO_ERR, rxi_json.encode({
-        feedbackSent = false
-    }))
+    M.send(cb_id, NO_ERR, rxi_json.encode({feedbackSent = false}))
 end
 
 -- TODO:
@@ -152,9 +151,7 @@ end
 function M.payments_get_purchases(cb_id)
     assert(M._payments)
 
-    local tmp = {
-        purchases = M._payments.purchases
-    }
+    local tmp = {purchases = M._payments.purchases}
     if M._payments.signed then
         tmp.signature = "signature_example"
     end
@@ -218,7 +215,7 @@ end
 function M.player_get_ids_per_game(cb_id)
     assert(M._player)
 
-    M.send(cb_id, NO_ERR, '[{"appID":100,"userID":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"}]')
+    M.send(cb_id, NO_ERR, "[{\"appID\":100,\"userID\":\"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"}]")
 end
 
 function M.player_get_name()
