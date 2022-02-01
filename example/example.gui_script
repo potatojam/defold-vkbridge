@@ -15,14 +15,26 @@ local function on_init_vk()
     end)
 end
 
+local function on_check_interstitial(self)
+    vkbridge.check_interstitial(function(self, err, data)
+        pprint(err, data)
+    end)
+end
+
 local function on_show_interstitial(self)
-    vkbridge.show_interstitial(function (self, err, data)
+    vkbridge.show_interstitial(function(self, err, data)
+        pprint(err, data)
+    end)
+end
+
+local function on_check_rewarded(self)
+    vkbridge.check_rewarded(true, function(self, err, data)
         pprint(err, data)
     end)
 end
 
 local function on_show_rewarded(self)
-    vkbridge.show_rewarded(nil, function (self, err, data)
+    vkbridge.show_rewarded(true, function(self, err, data)
         pprint(err, data)
     end)
 end
@@ -30,11 +42,13 @@ end
 function init(self)
     msg.post(".", "acquire_input_focus")
     vkbridge.subscribe(on_subscribe)
-    on_init_vk()   
+    on_init_vk()
 end
 
 function on_input(self, action_id, action)
     dirtylarry:button("btn_init", action_id, action, on_init_vk)
+    dirtylarry:button("btn_check_interstitial", action_id, action, on_check_interstitial)
     dirtylarry:button("btn_show_interstitial", action_id, action, on_show_interstitial)
+    dirtylarry:button("btn_check_rewarded", action_id, action, on_check_rewarded)
     dirtylarry:button("btn_show_rewarded", action_id, action, on_show_rewarded)
 end

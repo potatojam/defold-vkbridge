@@ -121,60 +121,97 @@ function M.init(callback)
     vkbridge_private.init_callbacks()
 end
 
+---Sends a message to native client and returns the object with response data
+---@param name string The VK Bridge method
+---@param data table|nil `optional` Message data object
+---@param callback function `optional` callback with response data `function(self, err, data)`. If successful: `err = nil`.
 function M.send(name, data, callback)
-    assert(type(name) == "string")
-    assert(type(callback) == "function")
+    assert(type(name) == "string", "The VK Bridge method must be set.")
 
     vkbridge_private.send(helper.wrap_for_promise(function(self, message_id, result)
-        if result then
-            result = rxi_json.decode(result)
-        end
-        if message_id == "error" then
-            callback(self, result)
-        else
-            callback(self, nil, result)
+        if callback then
+            if result then
+                result = rxi_json.decode(result)
+            end
+            if message_id == "error" then
+                callback(self, result)
+            else
+                callback(self, nil, result)
+            end
         end
     end), name, data and rxi_json.encode(data) or nil)
 end
 
+---Subscribes a function to events listening
+---@param callback function
 function M.subscribe(callback)
-    assert(type(callback) == "function")
+    assert(type(callback) == "function", "Not the correct callback.")
 
     listeners.add_listener(callback)
 end
 
+---Unsubscribes a function from events listening
+---@param callback function
 function M.unsubscribe(callback)
-    assert(type(callback) == "function")
+    assert(type(callback) == "function", "Not the correct callback.")
 
     listeners.remove_listener(callback)
 end
 
+---Checks if an event is available on the current device
+---@param name string The VK Bridge method
 function M.supports(name)
-    assert(type(name) == "string")
+    assert(type(name) == "string", "The VK Bridge method must be set.")
 
     vkbridge_private.supports(name)
 end
 
+---Returns `true` if VK Bridge is running in mobile app, or `false` if not
+---@return boolean
 function M.is_webview()
     return vkbridge_private.is_webview()
 end
 
+---Returns `true` if VK Bridge is running in standalone app, or `false` if not
+---@return boolean
 function M.is_standalone()
     return vkbridge_private.is_standalone()
 end
 
+---Returns `true` if VK Bridge is running in iframe, or `false` if not
+---@return boolean
 function M.is_iframe()
     return vkbridge_private.is_iframe()
 end
 
+---Returns `true` if VK Bridge is running in embedded app, or `false` if not
+---@return boolean
 function M.is_embedded()
     return vkbridge_private.is_embedded()
 end
 
+---Check if there is the interstitial ad available to serve
+---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
+function M.check_interstitial(callback)
+    M.send(M.CHECK_NATIVE_ADS, {ad_format = "interstitial"}, callback)
+end
+
+---Show interstitial ads
+---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
 function M.show_interstitial(callback)
     M.send(M.SHOW_NATIVE_ADS, {ad_format = "interstitial"}, callback)
 end
 
+---Check if there is the rewarded ad available to serve
+---@param use_waterfall boolean|nil Whether to use the mechanism for displaying interstitial advertising in the absence of rewarded video.
+---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
+function M.check_rewarded(use_waterfall, callback)
+    M.send(M.CHECK_NATIVE_ADS, {ad_format = "interstitial", use_waterfall = use_waterfall}, callback)
+end
+
+---Show rewarded ads
+---@param use_waterfall boolean|nil Whether to use the mechanism for displaying interstitial advertising in the absence of rewarded video.
+---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
 function M.show_rewarded(use_waterfall, callback)
     M.send(M.SHOW_NATIVE_ADS, {ad_format = "reward", use_waterfall = use_waterfall}, callback)
 end
