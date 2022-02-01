@@ -5,7 +5,7 @@ local function on_subscribe(self, response)
     pprint("subscribe", response)
 end
 
-local function init_vk()
+local function on_init_vk()
     vkbridge.init(function(self, err)
         if err then
             pprint("VK init error", err)
@@ -15,23 +15,26 @@ local function init_vk()
     end)
 end
 
-function init(self)
-    msg.post(".", "acquire_input_focus")
-    vkbridge.subscribe(on_subscribe)
-
-    
-    timer.delay(1, false, function()
-        -- vkbridge.send("VKWebAppGetEmail", {hello = "aaa"}, function (self, err, data)
-        --     pprint("VKWebAppGetEmail complete", self, err, data)
-        -- end)
-        -- pprint("vkbridge.supports", vkbridge.supports("VKWebAppGetEmail"))
-        -- pprint(vkbridge.is_embedded())
-        -- pprint(vkbridge.is_standalone())
-        -- pprint(vkbridge.is_iframe())
-        -- pprint(vkbridge.is_webview())
+local function on_show_interstitial(self)
+    vkbridge.send("VKWebAppShowNativeAds", {ad_format = "interstitial"}, function (self, err, data)
+        pprint(err, data)
     end)
 end
 
+local function on_show_rewarded(self)
+    vkbridge.send("VKWebAppShowNativeAds", {ad_format = "reward"}, function (self, err, data)
+        pprint(err, data)
+    end)
+end
+
+function init(self)
+    msg.post(".", "acquire_input_focus")
+    vkbridge.subscribe(on_subscribe)
+    on_init_vk()   
+end
+
 function on_input(self, action_id, action)
-    dirtylarry:button("btn_init", action_id, action, init_vk)
+    dirtylarry:button("btn_init", action_id, action, on_init_vk)
+    dirtylarry:button("btn_show_interstitial", action_id, action, on_show_interstitial)
+    dirtylarry:button("btn_show_rewarded", action_id, action, on_show_rewarded)
 end

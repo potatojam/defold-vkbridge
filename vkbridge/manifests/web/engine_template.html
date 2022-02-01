@@ -18,6 +18,22 @@
                 }
             };
 
+            VkBridgeHelper.conver_error = function (err) {
+                var new_err;
+                if (typeof err !== "object") {
+                    new_err = {
+                        error_type: "Unknown error",
+                        error_data: {
+                            error_code: -1,
+                            error_reason: err + ""
+                        }
+                    };
+                } else {
+                    new_err = err;
+                }
+                return JSON.stringify(new_err);
+            }
+
             VkBridgeHelper.init = function () {
                 var t = d.getElementsByTagName("script")[0];
                 var s = d.createElement("script");
@@ -33,15 +49,15 @@
                         if (response.result) {
                             send(VKBRIDGE_INIT_ID, "init", vkBridge);
                         } else {
-                            send(VKBRIDGE_INIT_ID, "error", err);
+                            send(VKBRIDGE_INIT_ID, "error", VkBridgeHelper.conver_error("vkBridge is not initialized."));
                         }
                     }).catch(function (err) {
-                        send(VKBRIDGE_INIT_ID, "error", err);
+                        send(VKBRIDGE_INIT_ID, "error", VkBridgeHelper.conver_error(err));
                     });
 
                 };
                 s.onerror = function () {
-                    send(VKBRIDGE_INIT_ID, "error", "Error loading VK SDK. Reload the page.");
+                    send(VKBRIDGE_INIT_ID, "error", VkBridgeHelper.conver_error("Error loading VK SDK. Reload the page."));
                 };
             }
 

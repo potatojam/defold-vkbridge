@@ -69,11 +69,15 @@ function M.send(name, data, callback)
     assert(type(name) == "string")
     assert(type(callback) == "function")
 
-    vkbridge_private.send(helper.wrap_for_promise(function(self, err, result)
+    vkbridge_private.send(helper.wrap_for_promise(function(self, message_id, result)
         if result then
             result = rxi_json.decode(result)
         end
-        callback(self, err, result)
+        if message_id == "error" then
+            callback(self, result)
+        else
+            callback(self, nil, result)
+        end
     end), name, data and rxi_json.encode(data) or nil)
 end
 

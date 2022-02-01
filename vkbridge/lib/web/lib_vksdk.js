@@ -128,10 +128,10 @@ var LibVkBridge = {
                     }
                 })
                 .catch((err) => {
-                    self.send(cb_id, self.toErrStr(err));
+                    self.send(cb_id, "error", VkBridgeHelper.conver_error(err));
                 });
         } catch (err) {
-            self.delaySend(cb_id, self.toErrStr(err));
+            self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(err));
         }
     },
 
