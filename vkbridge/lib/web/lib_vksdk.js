@@ -7,10 +7,6 @@ var LibVkBridge = {
         _callback_number: null,
         _callback_bool: null,
 
-        toErrStr: function (err) {
-            return err + "";
-        },
-
         parseJson: function (json) {
             try {
                 return JSON.parse(json);
@@ -118,7 +114,7 @@ var LibVkBridge = {
             if (params) {
                 json_params = self.parseJson(UTF8ToString(params));
             }
-            var method = UTF8ToString(name)
+            var method = UTF8ToString(name);
             self._vkBridge.send(method, json_params)
                 .then((result) => {
                     if (result) {
@@ -136,7 +132,7 @@ var LibVkBridge = {
     },
 
     VkBridgeLibrary_Supports: function (name) {
-        var method = UTF8ToString(name)
+        var method = UTF8ToString(name);
         var result = VkBridgeLibrary._vkBridge.supports(method);
         return result
     },

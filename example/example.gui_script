@@ -16,13 +16,13 @@ local function on_init_vk()
 end
 
 local function on_show_interstitial(self)
-    vkbridge.send("VKWebAppShowNativeAds", {ad_format = "interstitial"}, function (self, err, data)
+    vkbridge.show_interstitial(function (self, err, data)
         pprint(err, data)
     end)
 end
 
 local function on_show_rewarded(self)
-    vkbridge.send("VKWebAppShowNativeAds", {ad_format = "reward"}, function (self, err, data)
+    vkbridge.show_rewarded(nil, function (self, err, data)
         pprint(err, data)
     end)
 end
