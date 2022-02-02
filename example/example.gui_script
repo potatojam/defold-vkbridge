@@ -1,5 +1,58 @@
 local vkbridge = require("vkbridge.vkbridge")
-local dirtylarry = require("dirtylarry/dirtylarry")
+local druid = require("druid.druid")
+
+local st = {}
+
+function st.tostring(t, new_line, space, brace_l, brace_r)
+    new_line = new_line or "\n"
+    space = space or " "
+    brace_l = brace_l or "{"
+    brace_r = brace_r or "}"
+    if type(t) ~= "table" then
+        return tostring(t)
+    else
+        local s = ""
+        local i = 1
+        while t[i] ~= nil do
+            if #s ~= 0 then
+                s = s .. "," .. space .. new_line
+            end
+            s = s .. st.tostring(t[i])
+            i = i + 1
+        end
+        for k, v in pairs(t) do
+            if type(k) ~= "number" or k > i then
+                if #s ~= 0 then
+                    s = s .. "," .. space .. new_line
+                end
+                local key = type(k) == "string" and k or "[" .. st.tostring(k) .. "]"
+                s = s .. key .. "=" .. st.tostring(v)
+            end
+        end
+        return brace_l .. new_line .. s .. new_line .. brace_r
+    end
+end
+
+local function update_log(self)
+    local metrix = gui.get_text_metrics_from_node(self.log_text)
+    self.log_size.y = metrix.height * 0.55
+    if self.log_size.y < 200 then
+        self.log_size.y = 200
+    end
+    self.log_scroll:set_size(self.log_size)
+    self.log_scroll:scroll_to_percent(self.percent_y_100)
+end
+
+local function print_log(self, method, data)
+    pprint(method, data)
+    local text = "[" .. os.date("%H:%M:%S") .. "] " .. method .. ": "
+    if data then
+        text = text .. st.tostring(data)
+    end
+    self.logs = self.logs .. text .. "\n"
+    gui.set_text(self.log_text, self.logs)
+    update_log(self)
+end
 
 local function on_subscribe(self, response)
     pprint("subscribe", response)
@@ -7,6 +60,7 @@ end
 
 local function on_init_vk()
     vkbridge.init(function(self, err)
+        print_log(self, "init", "Vk inited")
         if err then
             pprint("VK init error", err)
         else
@@ -17,38 +71,60 @@ end
 
 local function on_check_interstitial(self)
     vkbridge.check_interstitial(function(self, err, data)
-        pprint(err, data)
+        print_log(self, "check_interstitial", err or data)
     end)
 end
 
 local function on_show_interstitial(self)
     vkbridge.show_interstitial(function(self, err, data)
-        pprint(err, data)
+        print_log(self, "show_interstitial", err or data)
     end)
 end
 
 local function on_check_rewarded(self)
     vkbridge.check_rewarded(true, function(self, err, data)
-        pprint(err, data)
+        print_log(self, "check_rewarded", err or data)
     end)
 end
 
 local function on_show_rewarded(self)
     vkbridge.show_rewarded(true, function(self, err, data)
-        pprint(err, data)
+        print_log(self, "show_rewarded", err or data)
     end)
 end
 
 function init(self)
-    msg.post(".", "acquire_input_focus")
+    self.logs = ""
+    self.percent_y_100 = vmath.vector3(0, 1, 0)
+    self.druid = druid.new(self)
+    self.log_scroll_content = gui.get_node("bkg_scroll_content")
+    self.log_scroll = self.druid:new_scroll("mask", self.log_scroll_content)
+    self.log_text = gui.get_node("txt_log")
+    self.log_size = vmath.vector3(850, 200, 0)
+    update_log(self)
+    self.log_scroll:set_extra_stretch_size(0)
+
+    self.druid:new_button("btn_init", on_init_vk)
+    self.druid:new_button("btn_check_interstitial", on_check_interstitial)
+    self.druid:new_button("btn_show_interstitial", on_show_interstitial)
+    self.druid:new_button("btn_check_rewarded", on_check_rewarded)
+    self.druid:new_button("btn_show_rewarded", on_show_rewarded)
     vkbridge.subscribe(on_subscribe)
     on_init_vk()
 end
 
+function update(self, dt)
+    self.druid:update(dt)
+end
+
+function on_message(self, message_id, message, sender)
+    self.druid:on_message(message_id, message, sender)
+end
+
 function on_input(self, action_id, action)
-    dirtylarry:button("btn_init", action_id, action, on_init_vk)
-    dirtylarry:button("btn_check_interstitial", action_id, action, on_check_interstitial)
-    dirtylarry:button("btn_show_interstitial", action_id, action, on_show_interstitial)
-    dirtylarry:button("btn_check_rewarded", action_id, action, on_check_rewarded)
-    dirtylarry:button("btn_show_rewarded", action_id, action, on_show_rewarded)
+    return self.druid:on_input(action_id, action)
+end
+
+function final(self)
+    self.druid:final()
 end

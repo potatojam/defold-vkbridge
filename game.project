@@ -11,6 +11,7 @@ height = 640
 [project]
 title = DefoldVkBridge
 dependencies#0 = https://github.com/andsve/dirtylarry/archive/master.zip
+dependencies#1 = https://github.com/Insality/druid/archive/refs/tags/0.7.0.zip
 
 [library]
 include_dirs = vkbridge
@@ -22,4 +23,7 @@ scale_mode = fit
 
 [vk_bridge]
 auto_init = true
+
+[input]
+game_binding = /input/game.input_bindingc
 
