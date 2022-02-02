@@ -1,5 +1,6 @@
 local vkbridge = require("vkbridge.vkbridge")
 local druid = require("druid.druid")
+local events = require("vkbridge.events")
 
 ---https://stackoverflow.com/questions/6075262/lua-table-tostringtablename-and-table-fromstringstringtable-functions
 local function serializeTable(val, name, skipnewlines, depth)
@@ -59,6 +60,12 @@ end
 local function on_init_vk(self)
     vkbridge.init(function(self, err)
         print_log(self, "init", err or "VkBridge initialized")
+        if not err then
+            gui.set_text(gui.get_node("txt_is_webview"), tostring(vkbridge.is_webview()))
+            gui.set_text(gui.get_node("txt_is_standalone"), tostring(vkbridge.is_standalone()))
+            gui.set_text(gui.get_node("txt_is_iframe"), tostring(vkbridge.is_iframe()))
+            gui.set_text(gui.get_node("txt_is_embedded"), tostring(vkbridge.is_embedded()))
+        end
     end)
 end
 
