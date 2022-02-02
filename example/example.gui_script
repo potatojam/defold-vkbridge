@@ -1,41 +1,35 @@
 local vkbridge = require("vkbridge.vkbridge")
 local druid = require("druid.druid")
 
-local st = {}
-
-function st.tostring(t, new_line, space, brace_l, brace_r)
-    new_line = new_line or "\n"
-    space = space or " "
-    brace_l = brace_l or "{"
-    brace_r = brace_r or "}"
-    if type(t) ~= "table" then
-        return tostring(t)
-    else
-        local s = ""
-        local i = 1
-        while t[i] ~= nil do
-            if #s ~= 0 then
-                s = s .. "," .. space .. new_line
-            end
-            s = s .. st.tostring(t[i])
-            i = i + 1
-        end
-        for k, v in pairs(t) do
-            if type(k) ~= "number" or k > i then
-                if #s ~= 0 then
-                    s = s .. "," .. space .. new_line
-                end
-                local key = type(k) == "string" and k or "[" .. st.tostring(k) .. "]"
-                s = s .. key .. "=" .. st.tostring(v)
-            end
-        end
-        return brace_l .. new_line .. s .. new_line .. brace_r
+---https://stackoverflow.com/questions/6075262/lua-table-tostringtablename-and-table-fromstringstringtable-functions
+local function serializeTable(val, name, skipnewlines, depth)
+    skipnewlines = skipnewlines or false
+    depth = depth or 0
+    local tmp = string.rep("  ", depth)
+    if name then
+        tmp = tmp .. name .. " = "
     end
+    if type(val) == "table" then
+        tmp = tmp .. "{" .. (not skipnewlines and "\n" or "")
+        for k, v in pairs(val) do
+            tmp = tmp .. serializeTable(v, k, skipnewlines, depth + 1) .. "," .. (not skipnewlines and "\n" or "")
+        end
+        tmp = tmp .. string.rep("  ", depth) .. "}"
+    elseif type(val) == "number" then
+        tmp = tmp .. tostring(val)
+    elseif type(val) == "string" then
+        tmp = tmp .. string.format("%q", val)
+    elseif type(val) == "boolean" then
+        tmp = tmp .. (val and "true" or "false")
+    else
+        tmp = tmp .. "\"[inserializeable datatype:" .. type(val) .. "]\""
+    end
+    return tmp
 end
 
 local function update_log(self)
     local metrix = gui.get_text_metrics_from_node(self.log_text)
-    self.log_size.y = metrix.height * 0.55
+    self.log_size.y = metrix.height * 0.5 + 10
     if self.log_size.y < 200 then
         self.log_size.y = 200
     end
@@ -47,7 +41,11 @@ local function print_log(self, method, data)
     pprint(method, data)
     local text = "[" .. os.date("%H:%M:%S") .. "] " .. method .. ": "
     if data then
-        text = text .. st.tostring(data)
+        if type(data) == "table" then
+            text = text .. serializeTable(data)
+        else
+            text = text .. data
+        end
     end
     self.logs = self.logs .. text .. "\n"
     gui.set_text(self.log_text, self.logs)
@@ -58,14 +56,9 @@ local function on_subscribe(self, response)
     pprint("subscribe", response)
 end
 
-local function on_init_vk()
+local function on_init_vk(self)
     vkbridge.init(function(self, err)
-        print_log(self, "init", "Vk inited")
-        if err then
-            pprint("VK init error", err)
-        else
-            pprint("Vk inited")
-        end
+        print_log(self, "init", err or "VkBridge initialized")
     end)
 end
 
@@ -93,7 +86,27 @@ local function on_show_rewarded(self)
     end)
 end
 
+local function on_storage_set(self)
+    vkbridge.storage_set("test_key", "test_value", function(self, err, data)
+        print_log(self, "on_storage_set", err or data)
+    end)
+end
+
+local function on_storage_get(self)
+    vkbridge.storage_get("test_key", function(self, err, data)
+        print_log(self, "on_storage_get", err or data)
+    end)
+end
+
+local function on_storage_get_keys(self)
+    vkbridge.storage_get_keys(20, 0, function(self, err, data)
+        print_log(self, "on_storage_get_keys", err or data)
+    end)
+end
+
 function init(self)
+    vkbridge.subscribe(on_subscribe)
+
     self.logs = ""
     self.percent_y_100 = vmath.vector3(0, 1, 0)
     self.druid = druid.new(self)
@@ -109,7 +122,10 @@ function init(self)
     self.druid:new_button("btn_show_interstitial", on_show_interstitial)
     self.druid:new_button("btn_check_rewarded", on_check_rewarded)
     self.druid:new_button("btn_show_rewarded", on_show_rewarded)
-    vkbridge.subscribe(on_subscribe)
+    self.druid:new_button("btn_storage_set", on_storage_set)
+    self.druid:new_button("btn_storage_get", on_storage_get)
+    self.druid:new_button("btn_storage_get_keys", on_storage_get_keys)
+
     on_init_vk()
 end
 

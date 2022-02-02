@@ -49,7 +49,7 @@ M.SHOW_COMMUNITY_WIDGET_PREVIEW_BOX = "VKWebAppShowCommunityWidgetPreviewBox"
 M.SHOW_STORY_BOX = "VKWebAppShowStoryBox"
 M.STORAGE_GET = "VKWebAppStorageGet"
 M.STORAGE_GET_KEYS = "VKWebAppStorageGetKeys"
-M.STOTAGE_SET = "VKWebAppStorageSet"
+M.STORAGE_SET = "VKWebAppStorageSet"
 M.FLASH_GET_INFO = "VKWebAppFlashGetInfo"
 M.SUBSCRIBE_STORY_APP = "VKWebAppSubscribeStoryApp"
 M.OPEN_WALL_POST = "VKWebAppOpenWallPost"
@@ -214,6 +214,37 @@ end
 ---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
 function M.show_rewarded(use_waterfall, callback)
     M.send(M.SHOW_NATIVE_ADS, {ad_format = "reward", use_waterfall = use_waterfall}, callback)
+end
+
+---Set the value of the variable whose name is passed in the `key` parameter. `Key` life is 1 year.
+---@param key string Key name, [a-zA-Z_\-0-9]. The maximum length is 100 characters.
+---@param value string The value of the variable. Only the first 4096 bytes are stored.
+---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
+function M.storage_set(key, value, callback)
+    assert(type(key) == "string", "Wrong key format. Must be string.")
+    assert(type(value) == "string", "Wrong value format. Must be string.")
+    M.send(M.STORAGE_SET, {key = key, value = value}, callback)
+end
+
+---Return the values of the variables.
+---@param keys table|string Names of keys or key [a-zA-Z_\-0-9]. Can be a table or a string
+---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
+function M.storage_get(keys, callback)
+    assert(type(keys) == "table" or type(keys) == "string", "Wrong keys format. Must be table or string.")
+    assert(type(callback) == "function", "Not the correct callback.")
+    if type(keys) == "string" then
+        keys = {keys}
+    end
+    M.send(M.STORAGE_GET, {keys = keys}, callback)
+end
+
+---Return the names of all variables.
+---@param count number The number of variable names to get information about.
+---@param offset number|nil The offset required to select a particular subset of variable names.
+---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
+function M.storage_get_keys(count, offset, callback)
+    assert(type(count) == "number", "Wrong count format. Must be number.")
+    M.send(M.STORAGE_GET_KEYS, {count = count, offset = offset}, callback)
 end
 
 return M
