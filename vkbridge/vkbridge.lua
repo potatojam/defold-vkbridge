@@ -88,19 +88,19 @@ function M.send(name, data, callback)
 end
 
 ---Subscribes a function to events listening
----@param callback function
-function M.subscribe(callback)
-    assert(type(callback) == "function", "Not the correct callback.")
+---@param fn function
+function M.subscribe(fn)
+    assert(type(fn) == "function", "Not the correct function.")
 
-    listeners.add_listener(callback)
+    listeners.add_listener(fn)
 end
 
 ---Unsubscribes a function from events listening
----@param callback function
-function M.unsubscribe(callback)
-    assert(type(callback) == "function", "Not the correct callback.")
+---@param fn function
+function M.unsubscribe(fn)
+    assert(type(fn) == "function", "Not the correct function.")
 
-    listeners.remove_listener(callback)
+    listeners.remove_listener(fn)
 end
 
 ---Checks if an event is available on the current device
