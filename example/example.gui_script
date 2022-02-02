@@ -2,6 +2,9 @@ local vkbridge = require("vkbridge.vkbridge")
 local druid = require("druid.druid")
 local events = require("vkbridge.events")
 
+local C_RED = vmath.vector4(1, 0, 0, 1)
+local C_GREEN = vmath.vector4(0, 1, 0, 1)
+
 ---https://stackoverflow.com/questions/6075262/lua-table-tostringtablename-and-table-fromstringstringtable-functions
 local function serializeTable(val, name, skipnewlines, depth)
     skipnewlines = skipnewlines or false
@@ -57,14 +60,24 @@ local function on_subscribe(self, response)
     pprint("subscribe", response)
 end
 
+local function show_boolean(node_name, value)
+    local txt = gui.get_node(node_name)
+    gui.set_text(txt, tostring(value))
+    if value then
+        gui.set_color(txt, C_GREEN)
+    else
+        gui.set_color(txt, C_RED)
+    end
+end
+
 local function on_init_vk(self)
     vkbridge.init(function(self, err)
         print_log(self, "init", err or "VkBridge initialized")
         if not err then
-            gui.set_text(gui.get_node("txt_is_webview"), tostring(vkbridge.is_webview()))
-            gui.set_text(gui.get_node("txt_is_standalone"), tostring(vkbridge.is_standalone()))
-            gui.set_text(gui.get_node("txt_is_iframe"), tostring(vkbridge.is_iframe()))
-            gui.set_text(gui.get_node("txt_is_embedded"), tostring(vkbridge.is_embedded()))
+            show_boolean("txt_is_webview", vkbridge.is_webview())
+            show_boolean("txt_is_standalone", vkbridge.is_standalone())
+            show_boolean("txt_is_iframe", vkbridge.is_iframe())
+            show_boolean("txt_is_embedded", vkbridge.is_embedded())
         end
     end)
 end
