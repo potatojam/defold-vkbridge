@@ -7,6 +7,7 @@ shared_state = 1
 [display]
 width = 960
 height = 640
+high_dpi = 1
 
 [project]
 title = DefoldVkBridge
@@ -20,6 +21,7 @@ include_dirs = vkbridge
 show_made_with_defold = 0
 show_fullscreen_button = 0
 scale_mode = fit
+engine_arguments = --verify-graphics-calls=false
 
 [vk_bridge]
 auto_init = true
