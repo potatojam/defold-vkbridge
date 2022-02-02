@@ -191,4 +191,16 @@ Allows you to get basic data about the profile of the user who launched the appl
 
 ## Credits
 
+Made by [PotatoJam](https://github.com/potatojam).
+
 This project uses the source code of [YaGames](https://github.com/indiesoftby/defold-yagames).
+
+For example used:
+
+[Dirty Larry](https://github.com/andsve/dirtylarry)
+
+[Druid](https://github.com/Insality/druid)
+
+### License
+
+MIT license.
