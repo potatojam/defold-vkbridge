@@ -95,19 +95,25 @@ end
 
 local function on_storage_set(self)
     vkbridge.storage_set("test_key", "test_value", function(self, err, data)
-        print_log(self, "on_storage_set", err or data)
+        print_log(self, "storage_set", err or data)
     end)
 end
 
 local function on_storage_get(self)
     vkbridge.storage_get("test_key", function(self, err, data)
-        print_log(self, "on_storage_get", err or data)
+        print_log(self, "storage_get", err or data)
     end)
 end
 
 local function on_storage_get_keys(self)
     vkbridge.storage_get_keys(20, 0, function(self, err, data)
-        print_log(self, "on_storage_get_keys", err or data)
+        print_log(self, "storage_get_keys", err or data)
+    end)
+end
+
+local function on_get_user_info(self)
+    vkbridge.get_user_info(function(self, err, data)
+        print_log(self, "get_user_info", err or data)
     end)
 end
 
@@ -132,6 +138,7 @@ function init(self)
     self.druid:new_button("btn_storage_set", on_storage_set)
     self.druid:new_button("btn_storage_get", on_storage_get)
     self.druid:new_button("btn_storage_get_keys", on_storage_get_keys)
+    self.druid:new_button("btn_get_user_info", on_get_user_info)
 
     on_init_vk()
 end

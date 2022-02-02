@@ -193,4 +193,11 @@ function M.storage_get_keys(count, offset, callback)
     M.send(events.STORAGE_GET_KEYS, {count = count, offset = offset}, callback)
 end
 
+---Allows you to get basic data about the profile of the user who launched the application
+---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
+function M.get_user_info(callback)
+    assert(type(callback) == "function", "Not the correct callback.")
+    M.send(events.GET_USER_INFO, nil, callback)
+end
+
 return M

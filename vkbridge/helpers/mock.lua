@@ -70,6 +70,20 @@ function M.send(cb_id, message_id, message)
             end
         end
         M.vk_send(cb_id, nil, rxi_json.encode({keys = ex_data}))
+    elseif message_id == events.GET_USER_INFO then
+        local data = {
+            id = 2314852,
+            first_name = "Mock",
+            last_name = "Mockovish",
+            sex = 1,
+            city = {id = 2, title = "Saint Petersburg"},
+            country = {id = 1, title = "Russia"},
+            bdate = "10.4.1990",
+            photo_100 = "https://pp.userapi.com/c836333/v836333553/5b138/2eWBOuj5A4g.jpg]",
+            photo_200 = "https://pp.userapi.com/c836333/v836333553/5b137/tEJNQNigU80.jpg]",
+            timezone = 3
+        }
+        M.vk_send(cb_id, nil, rxi_json.encode(data))
     else
         M.vk_send(cb_id, nil, message)
     end
