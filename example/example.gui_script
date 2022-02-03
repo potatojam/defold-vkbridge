@@ -57,7 +57,8 @@ local function print_log(self, method, data)
 end
 
 local function on_subscribe(self, response)
-    pprint("subscribe", response)
+    -- pprint("subscribe", response)
+    print_log(self, "subscribe", response)
 end
 
 local function show_boolean(node_name, value)
@@ -78,6 +79,12 @@ local function on_init_vk(self)
             show_boolean("txt_is_standalone", vkbridge.is_standalone())
             show_boolean("txt_is_iframe", vkbridge.is_iframe())
             show_boolean("txt_is_embedded", vkbridge.is_embedded())
+            -- timer.delay(1, false, function()
+            --     print_log(self, "VKWebAppGetAds", "send")
+            --     vkbridge.send("VKWebAppGetAds", {}, function(self, err, data)
+            --         print_log(self, "VKWebAppGetAds", err or data)
+            --     end)
+            -- end)
         end
     end)
 end
@@ -153,6 +160,7 @@ function init(self)
     self.druid:new_button("btn_storage_get_keys", on_storage_get_keys)
     self.druid:new_button("btn_get_user_info", on_get_user_info)
 
+    print_log(self, "init", "version: " .. sys.get_config("project.version"))
     on_init_vk()
 end
 

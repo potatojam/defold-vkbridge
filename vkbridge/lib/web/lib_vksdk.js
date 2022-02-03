@@ -131,6 +131,15 @@ var LibVkBridge = {
         }
     },
 
+    VkBridgeLibrary_ShowBanner: function (cb_id) {
+        // var self = VkBridgeLibrary;
+        // self._vkBridge.send('VKWebAppGetAds')
+        //     .then((promoBannerProps) => {
+        //         this.setState({ promoBannerProps });
+        //     })
+        // { this.state.promoBannerProps && <PromoBanner bannerData={this.state.promoBannerProps} /> }
+    },
+
     VkBridgeLibrary_Supports: function (name) {
         var method = UTF8ToString(name);
         var result = VkBridgeLibrary._vkBridge.supports(method);
