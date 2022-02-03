@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "jsx": "react",
         "module": "amd",
         "target": "es5",
         "moduleResolution": "node",
@@ -12,6 +13,6 @@
         "esModuleInterop": true
     },
     "files": [
-        "ts/app.ts"
+        "ts/app.tsx"
     ]
 }

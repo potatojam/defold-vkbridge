@@ -62,26 +62,17 @@
 
             VkBridgeHelper.init = function () {
                 load_script("https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js", function () {
-                    if (vkBridge.isWebView()) {
-                        load_script("vkui-4.25.2.min.js", function () {
-                            setTimeout(function () {
-                                vkBridge.send('VKWebAppGetAds')
-                                    .then((promoBannerProps) => {
-                                        send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitResultSend", result: true });
-                                        // send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitResultGet", react: typeof React });
-                                        // var el = React.createElement(PromoBanner, {
-                                        //     bannerData: promoBannerProps
-                                        // });
-                                        // send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitResultGet", element: typeof el });
-                                    });
-                            }, 1000)
-                            send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitResult", result: true });
-                        }, function () {
-                            send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitError", error: VkBridgeHelper.conver_error("Error loading VKUI. Reload the page.") });
-                        });
-                    } else {
-                        send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitResult", result: false, message: "Not supported for this platform." });
-                    }
+                    // if (vkBridge.isWebView()) {
+                    load_script("vkui-4.25.2.min.js?version={{{project.version}}}", function () {
+                        VkBridgeHelper.app = new App();
+                        // console.log(VkBridgeHelper.app);
+                        send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitResult", result: true });
+                    }, function () {
+                        send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitError", error: VkBridgeHelper.conver_error("Error loading VKUI. Reload the page.") });
+                    });
+                    // } else {
+                    // send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitResult", result: false, message: "Not supported for this platform." });
+                    // }
                     on_loaded_scripts();
                 }, function () {
                     send(VKBRIDGE_INIT_ID, "error", VkBridgeHelper.conver_error("Error loading VK SDK. Reload the page."));
@@ -90,7 +81,7 @@
 
             VkBridgeHelper.autoInit = true;
             // {{#vk_bridge.auto_init}}
-            // VkBridgeHelper.autoInit = {{{vk_bridge.auto_init}}};
+            VkBridgeHelper.autoInit = "{{{vk_bridge.auto_init}}}" === "true";
             // {{/vk_bridge.auto_init}}
             if (VkBridgeHelper.autoInit) {
                 VkBridgeHelper.init();
@@ -98,6 +89,7 @@
         })(document);
     </script>
 </head>
+
 <body>
     <div id="vk-container" class="vkui__root">
     </div>

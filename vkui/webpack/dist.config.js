@@ -18,7 +18,9 @@ module.exports = function () {
     distConfig.mode = 'production';
     distConfig.output = {
         path: path.join(rootPath, '../vkbridge/res/web/'),
-        filename: config.name + '.min.js'
+        filename: config.name + '.min.js',
+        libraryTarget: 'var',
+        library: 'App'
     };
     distConfig.plugins = distConfig.plugins.concat([
         new ForkTsCheckerWebpackPlugin({

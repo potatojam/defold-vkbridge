@@ -131,13 +131,35 @@ var LibVkBridge = {
         }
     },
 
-    VkBridgeLibrary_ShowBanner: function (cb_id) {
-        // var self = VkBridgeLibrary;
-        // self._vkBridge.send('VKWebAppGetAds')
-        //     .then((promoBannerProps) => {
-        //         this.setState({ promoBannerProps });
-        //     })
-        // { this.state.promoBannerProps && <PromoBanner bannerData={this.state.promoBannerProps} /> }
+    VkBridgeLibrary_ShowWebViewBanner: function (cb_id, position) {
+        var self = VkBridgeLibrary;
+        try {
+            var position_string = undefined;
+            if (position) {
+                position_string = UTF8ToString(position);
+            }
+            self._vkBridge.send("VKWebAppGetAds", {})
+                .then((promoBannerProps) => {
+                    VkBridgeHelper.app.showBanner(promoBannerProps);
+                    self.send(cb_id, null, JSON.stringify({ result: true, promoBannerProps: promoBannerProps }));
+                })
+                .catch((err) => {
+                    self.send(cb_id, "error", VkBridgeHelper.conver_error(err));
+                });
+        } catch (err) {
+            self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(err));
+        }
+    },
+
+    VkBridgeLibrary_HideWebViewBanner: function () {
+        var result = true;
+        try {
+            VkBridgeHelper.app.hideBanner();
+        } catch (err) {
+            result = false;
+            // TODO handle error
+        }
+        return result;
     },
 
     VkBridgeLibrary_Supports: function (name) {

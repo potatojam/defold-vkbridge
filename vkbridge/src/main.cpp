@@ -14,6 +14,8 @@ extern "C"
 {
     void VkBridgeLibrary_Init();
     void VkBridgeLibrary_Send(const int cb_id, const char *name, const char *cdata);
+    void VkBridgeLibrary_ShowWebViewBanner(const int cb_id, const char *position);
+    const bool VkBridgeLibrary_HideWebViewBanner();
     const bool VkBridgeLibrary_Supports(const char *name);
     const bool VkBridgeLibrary_isWebView();
     const bool VkBridgeLibrary_isStandalone();
@@ -51,6 +53,18 @@ static int Bridge_Send(lua_State *L)
         VkBridgeLibrary_Send(luaL_checkint(L, 1), luaL_checkstring(L, 2), 0);
     }
     return 0;
+}
+
+static int ShowWebViewBanner(lua_State *L)
+{
+    VkBridgeLibrary_ShowWebViewBanner(luaL_checkint(L, 1), luaL_checkstring(L, 2));
+    return 0;
+}
+
+static int HideWebViewBanner(lua_State *L)
+{
+    lua_pushboolean(L, VkBridgeLibrary_HideWebViewBanner());
+    return 1;
 }
 
 static int Supports(lua_State *L)
@@ -96,6 +110,8 @@ static const luaL_reg Module_methods[] =
         {"is_standalone", IsStandalone},
         {"is_iframe", IsIframe},
         {"is_embedded", IsEmbedded},
+        {"show_webview_banner", ShowWebViewBanner},
+        {"hide_webview_banner", HideWebViewBanner},
         {0, 0}};
 
 static void LuaInit(lua_State *L)

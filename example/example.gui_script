@@ -48,7 +48,8 @@ local function print_log(self, method, data)
         if type(data) == "table" then
             text = text .. serializeTable(data)
         else
-            text = text .. data
+            text = text .. tostring(data)
+            pprint(text .. tostring(data))
         end
     end
     self.logs = self.logs .. text .. "\n"
@@ -137,6 +138,17 @@ local function on_get_user_info(self)
     end)
 end
 
+local function on_show_webview_banner(self)
+    vkbridge.show_webview_banner("top", function(self, err, data)
+        print_log(self, "show_webview_banner", err or data)
+    end)
+end
+
+local function on_hide_webview_banner(self)
+    local result = vkbridge.hide_webview_banner()
+    print_log(self, "hide_webview_banner", result)
+end
+
 function init(self)
     vkbridge.subscribe(on_subscribe)
 
@@ -159,6 +171,8 @@ function init(self)
     self.druid:new_button("btn_storage_get", on_storage_get)
     self.druid:new_button("btn_storage_get_keys", on_storage_get_keys)
     self.druid:new_button("btn_get_user_info", on_get_user_info)
+    self.druid:new_button("btn_show_webview_banner", on_show_webview_banner)
+    self.druid:new_button("btn_hide_webview_banner", on_hide_webview_banner)
 
     print_log(self, "init", "version: " .. sys.get_config("project.version"))
     on_init_vk()

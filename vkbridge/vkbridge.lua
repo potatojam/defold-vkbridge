@@ -40,6 +40,21 @@ local function on_any_event(self, cb_id, message_id, message)
     listeners.invoke(self, message)
 end
 
+local function auto_handle(callback)
+    return helper.wrap_for_promise(function(self, message_id, result)
+        if callback then
+            if result then
+                result = rxi_json.decode(result)
+            end
+            if message_id == "error" then
+                callback(self, result)
+            else
+                callback(self, nil, result)
+            end
+        end
+    end)
+end
+
 --
 -- PUBLIC API
 --
@@ -73,18 +88,7 @@ end
 function M.send(name, data, callback)
     assert(type(name) == "string", "The VK Bridge method must be set.")
 
-    vkbridge_private.send(helper.wrap_for_promise(function(self, message_id, result)
-        if callback then
-            if result then
-                result = rxi_json.decode(result)
-            end
-            if message_id == "error" then
-                callback(self, result)
-            else
-                callback(self, nil, result)
-            end
-        end
-    end), name, data and rxi_json.encode(data) or nil)
+    vkbridge_private.send(auto_handle(callback), name, data and rxi_json.encode(data) or nil)
 end
 
 ---Subscribes a function to events listening
@@ -198,6 +202,14 @@ end
 function M.get_user_info(callback)
     assert(type(callback) == "function", "Not the correct callback.")
     M.send(events.GET_USER_INFO, nil, callback)
+end
+
+function M.show_webview_banner(position, callback)
+    vkbridge_private.show_webview_banner(auto_handle(callback), position or "top")
+end
+
+function M.hide_webview_banner()
+    return vkbridge_private.hide_webview_banner()
 end
 
 return M
