@@ -148,12 +148,20 @@ var LibVkBridge = {
             if (self._wv_banner_configs.count === 0) {
                 self.send(cb_id, null, JSON.stringify({ count: 0, result: true }));
             } else {
+                VkBridgeHelper.send_subscribe({ type: "VKWebAppGetAdsSt" })
                 var values = [];
-                var value;
                 for (let i = 0; i < self._wv_banner_configs.count; i++) {
-                    value = await self._vkBridge.send("VKWebAppGetAds", {})
+                    VkBridgeHelper.send_subscribe({ type: "VKWebAppGetAdsN", i: i })
+                    var value = await self._vkBridge.send("VKWebAppGetAds", {})
+                    .then((values) => {
+                        VkBridgeHelper.send_subscribe({ type: "VKWebAppGetAdsNX", i: i })
+                    })
+                    .catch((err) => {
+                        self.send(cb_id, "error", VkBridgeHelper.conver_error(err));
+                    });
                     values.push(value);
                 }
+                VkBridgeHelper.send_subscribe({ type: "VKWebAppGetAdsN", scheme: self._wv_banner_configs.scheme })
                 VkBridgeHelper.app.showBanner(values, self._wv_banner_configs.position, self._wv_banner_configs.scheme);
                 self.send(cb_id, null, JSON.stringify({ result: true }));
             }

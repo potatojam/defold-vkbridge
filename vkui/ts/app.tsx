@@ -96,11 +96,9 @@ export = class App {
                 <AdaptivityProvider>
                     <AppRoot mode='partial'>
                         <View activePanel='promo'>
-                            {/* <Panel id='promo'> */}
                             <FixedLayout id='promo' vertical={position}>
                                 <WebViewBanner bannerConfigs={bannerConfigs} />
                             </FixedLayout>
-                            {/* </Panel> */}
                         </View>
                     </AppRoot>
                 </AdaptivityProvider>
