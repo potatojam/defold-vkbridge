@@ -1,15 +1,27 @@
 /* eslint-disable camelcase */
 // import { AppRoot, ConfigProvider, AdaptivityProvider, PromoBanner, FixedLayout, View } from '@vkontakte/vkui';
+// Partial imports reduse script size.
 import AppRoot from '@vkontakte/vkui/dist/components/AppRoot/AppRoot';
 import ConfigProvider from '@vkontakte/vkui/dist/components/ConfigProvider/ConfigProvider';
 import AdaptivityProvider from '@vkontakte/vkui/dist/components/AdaptivityProvider/AdaptivityProvider';
 import PromoBanner from '@vkontakte/vkui/dist/components/PromoBanner/PromoBanner';
 import FixedLayout from '@vkontakte/vkui/dist/components/FixedLayout/FixedLayout';
 import View from '@vkontakte/vkui/dist/components/View/View';
-// import Panel from '@vkontakte/vkui/dist/components/Panel/Panel';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import '@vkontakte/vkui/dist/vkui.css';
+// import '@vkontakte/vkui/dist/vkui.css';
+// Partial imports reduse script size.
+import '@vkontakte/vkui/dist/cssm/components/AppRoot/AppRoot.css';
+import '@vkontakte/vkui/dist/cssm/components/PromoBanner/PromoBanner.css';
+import '@vkontakte/vkui/dist/cssm/components/FixedLayout/FixedLayout.css';
+import '@vkontakte/vkui/dist/cssm/components/View/View.css';
+import '@vkontakte/vkui/dist/cssm/components/SimpleCell/SimpleCell.css';
+import '@vkontakte/vkui/dist/cssm/components/FocusVisible/FocusVisible.css';
+import '@vkontakte/vkui/dist/cssm/components/Avatar/Avatar.css';
+import '@vkontakte/vkui/dist/cssm/components/Tappable/Tappable.css';
+import '@vkontakte/vkui/dist/cssm/components/Typography/Caption/Caption.css';
+import '@vkontakte/vkui/dist/cssm/components/Button/Button.css';
+import '@vkontakte/vkui/dist/cssm/styles/themes.css';
 
 declare type BannerData = {
     title?: string;
