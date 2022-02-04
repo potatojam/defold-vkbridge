@@ -62,17 +62,16 @@
 
             VkBridgeHelper.init = function () {
                 load_script("https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js", function () {
-                    // if (vkBridge.isWebView()) {
-                    load_script("vkui-4.25.2.min.js?version={{{project.version}}}", function () {
-                        VkBridgeHelper.app = new App();
-                        // console.log(VkBridgeHelper.app);
-                        send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitResult", result: true });
-                    }, function () {
-                        send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitError", error: VkBridgeHelper.conver_error("Error loading VKUI. Reload the page.") });
-                    });
-                    // } else {
-                    // send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitResult", result: false, message: "Not supported for this platform." });
-                    // }
+                    if (vkBridge.isWebView() || true) {
+                        load_script("vkui-4.25.2.min.js?version={{{project.version}}}", function () {
+                            VkBridgeHelper.app = new App();
+                            send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitResult", result: true });
+                        }, function () {
+                            send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitError", error: VkBridgeHelper.conver_error("Error loading VKUI. Reload the page.") });
+                        });
+                    } else {
+                        send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitResult", result: false, message: "Not supported for this platform." });
+                    }
                     on_loaded_scripts();
                 }, function () {
                     send(VKBRIDGE_INIT_ID, "error", VkBridgeHelper.conver_error("Error loading VK SDK. Reload the page."));

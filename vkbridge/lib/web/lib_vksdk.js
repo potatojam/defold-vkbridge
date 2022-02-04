@@ -6,6 +6,7 @@ var LibVkBridge = {
         _callback_empty: null,
         _callback_number: null,
         _callback_bool: null,
+        _wv_banner_configs: { position: "top", count: 1 },
 
         parseJson: function (json) {
             try {
@@ -131,21 +132,35 @@ var LibVkBridge = {
         }
     },
 
-    VkBridgeLibrary_ShowWebViewBanner: function (cb_id, position) {
+    VkBridgeLibrary_SetWebViewBannerConfigs: function (position, count) {
+        var self = VkBridgeLibrary;
+        self._wv_banner_configs.position = UTF8ToString(position);
+        self._wv_banner_configs.count = count;
+    },
+
+    VkBridgeLibrary_ShowWebViewBanner: function (cb_id) {
         var self = VkBridgeLibrary;
         try {
-            var position_string = undefined;
-            if (position) {
-                position_string = UTF8ToString(position);
+            if (self._wv_banner_configs.count === 0) {
+                self.send(cb_id, null, JSON.stringify({ count: 0, result: true }));
+            } else {
+                // var promises = [];
+                // var prom;
+                // for (let i = 0; i < self._wv_banner_configs.count; i++) {
+                //     prom = self._vkBridge.send("VKWebAppGetAds", {});
+                //     promises.push(prom);
+                // }
+                // Promise.all(promises)
+                self.send(cb_id, null, JSON.stringify({ type: "VKWebAppGetAds", start: true, position: self._wv_banner_configs.position }));
+                self._vkBridge.send("VKWebAppGetAds", {})
+                    .then((values) => {
+                        VkBridgeHelper.app.showBanner([values], self._wv_banner_configs.position);
+                        self.send(cb_id, null, JSON.stringify({ result: true }));
+                    })
+                    .catch((err) => {
+                        self.send(cb_id, "error", VkBridgeHelper.conver_error(err));
+                    });
             }
-            self._vkBridge.send("VKWebAppGetAds", {})
-                .then((promoBannerProps) => {
-                    VkBridgeHelper.app.showBanner(promoBannerProps);
-                    self.send(cb_id, null, JSON.stringify({ result: true, promoBannerProps: promoBannerProps }));
-                })
-                .catch((err) => {
-                    self.send(cb_id, "error", VkBridgeHelper.conver_error(err));
-                });
         } catch (err) {
             self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(err));
         }

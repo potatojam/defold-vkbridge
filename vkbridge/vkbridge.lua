@@ -8,7 +8,13 @@ local events = require("vkbridge.events")
 -- HELPERS
 --
 
-local M = {vkbridge_ready = false}
+local M = {}
+
+M.vkbridge_ready = false
+M.is_webview_ch = false
+M.is_standalone_ch = false
+M.is_iframe_ch = false
+M.is_embedded_ch = false
 
 local init_callback = nil
 
@@ -27,6 +33,10 @@ end
 local function init_listener(self, cb_id, message_id, message)
     if message_id == "init" then
         M.vkbridge_ready = true
+        M.is_webview_ch = vkbridge_private.is_webview()
+        M.is_standalone_ch = vkbridge_private.is_standalone()
+        M.is_iframe_ch = vkbridge_private.is_iframe()
+        M.is_embedded_ch = vkbridge_private.is_embedded()
         call_init_callback(self)
     elseif message_id == "error" then
         print("VkBridge couldn't be initialized.")
@@ -119,25 +129,25 @@ end
 ---Returns `true` if VK Bridge is running in mobile app, or `false` if not
 ---@return boolean
 function M.is_webview()
-    return vkbridge_private.is_webview()
+    return M.is_webview_ch or true -- TODO remove
 end
 
 ---Returns `true` if VK Bridge is running in standalone app, or `false` if not
 ---@return boolean
 function M.is_standalone()
-    return vkbridge_private.is_standalone()
+    return M.is_standalone_ch
 end
 
 ---Returns `true` if VK Bridge is running in iframe, or `false` if not
 ---@return boolean
 function M.is_iframe()
-    return vkbridge_private.is_iframe()
+    return M.is_iframe_ch
 end
 
 ---Returns `true` if VK Bridge is running in embedded app, or `false` if not
 ---@return boolean
 function M.is_embedded()
-    return vkbridge_private.is_embedded()
+    return M.is_embedded_ch
 end
 
 ---Check if there is the interstitial ad available to serve
@@ -204,12 +214,27 @@ function M.get_user_info(callback)
     M.send(events.GET_USER_INFO, nil, callback)
 end
 
-function M.show_webview_banner(position, callback)
-    vkbridge_private.show_webview_banner(auto_handle(callback), position or "top")
+---Set WebView banner configs. Available for mobile only.
+---@param position string `optional` Banner location. Can be `top` or `bottom`. Default `top`
+---@param count number `optional` Number of banners in a column.
+function M.set_wv_banner_configs(position, count)
+    assert(M.is_webview() == true, "Webview is not available. Available for mobile only.")
+    vkbridge_private.set_wv_banner_configs(position or "top", count or 1)
 end
 
-function M.hide_webview_banner()
-    return vkbridge_private.hide_webview_banner()
+---Show WebView banner. Available for mobile only.
+---Calling show again will `refresh` the banner.
+---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
+function M.show_wv_banner(callback)
+    assert(M.is_webview() == true, "Webview is not available. Available for mobile only.")
+    vkbridge_private.show_wv_banner(auto_handle(callback))
+end
+
+---Hide WebView banner. Returns `true` on success. Available for mobile only.
+---@return boolean
+function M.hide_wv_banner()
+    assert(M.is_webview() == true, "Webview is not available. Available for mobile only.")
+    return vkbridge_private.hide_wv_banner()
 end
 
 return M

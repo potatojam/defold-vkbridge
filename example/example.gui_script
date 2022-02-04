@@ -80,12 +80,9 @@ local function on_init_vk(self)
             show_boolean("txt_is_standalone", vkbridge.is_standalone())
             show_boolean("txt_is_iframe", vkbridge.is_iframe())
             show_boolean("txt_is_embedded", vkbridge.is_embedded())
-            -- timer.delay(1, false, function()
-            --     print_log(self, "VKWebAppGetAds", "send")
-            --     vkbridge.send("VKWebAppGetAds", {}, function(self, err, data)
-            --         print_log(self, "VKWebAppGetAds", err or data)
-            --     end)
-            -- end)
+            if vkbridge.is_webview() then
+                vkbridge.set_wv_banner_configs("top", 2)
+            end
         end
     end)
 end
@@ -139,13 +136,13 @@ local function on_get_user_info(self)
 end
 
 local function on_show_webview_banner(self)
-    vkbridge.show_webview_banner("top", function(self, err, data)
+    vkbridge.show_wv_banner(function(self, err, data)
         print_log(self, "show_webview_banner", err or data)
     end)
 end
 
 local function on_hide_webview_banner(self)
-    local result = vkbridge.hide_webview_banner()
+    local result = vkbridge.hide_wv_banner()
     print_log(self, "hide_webview_banner", result)
 end
 

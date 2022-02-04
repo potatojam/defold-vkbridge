@@ -1,5 +1,12 @@
 /* eslint-disable camelcase */
-import { AppRoot, ConfigProvider, AdaptivityProvider, PromoBanner, FixedLayout, Panel, View } from '@vkontakte/vkui';
+// import { AppRoot, ConfigProvider, AdaptivityProvider, PromoBanner, FixedLayout, View } from '@vkontakte/vkui';
+import AppRoot from '@vkontakte/vkui/dist/components/AppRoot/AppRoot';
+import ConfigProvider from '@vkontakte/vkui/dist/components/ConfigProvider/ConfigProvider';
+import AdaptivityProvider from '@vkontakte/vkui/dist/components/AdaptivityProvider/AdaptivityProvider';
+import PromoBanner from '@vkontakte/vkui/dist/components/PromoBanner/PromoBanner';
+import FixedLayout from '@vkontakte/vkui/dist/components/FixedLayout/FixedLayout';
+import View from '@vkontakte/vkui/dist/components/View/View';
+// import Panel from '@vkontakte/vkui/dist/components/Panel/Panel';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import '@vkontakte/vkui/dist/vkui.css';
@@ -33,7 +40,7 @@ declare type BannerData = {
 };
 
 declare type WebViewBannerProps = {
-    promoBannerProps: BannerData;
+    bannerConfigs: BannerData[];
 };
 
 class WebViewBanner extends React.Component {
@@ -44,32 +51,46 @@ class WebViewBanner extends React.Component {
         super(props);
     }
 
+    public renderPromoBanner(promoBannerProps: BannerData): JSX.Element {
+        return (
+            <PromoBanner
+                bannerData={promoBannerProps}
+                onClose={() => console.log('onClose')}
+                isCloseButtonHidden={true}
+            />
+        );
+    }
+
+    public renderPromoBanners(bannerConfigs: BannerData[]): JSX.Element[] {
+        return bannerConfigs.map((promoBannerProps: BannerData) =>
+            this.renderPromoBanner(promoBannerProps)
+        );
+    }
+
     public render(): JSX.Element {
         return (
-            <AppRoot mode='partial'>
-                <View activePanel='promo'>
-                    <Panel id='promo'>
-                        <FixedLayout vertical='top'>
-                            <PromoBanner
-                                bannerData={this.props.promoBannerProps}
-                                onClose={() => console.log('onClose')}
-                                isCloseButtonHidden={true}
-                            />
-                        </FixedLayout>
-                    </Panel>
-                </View>
-            </AppRoot>
+            <div>
+                {this.renderPromoBanners(this.props.bannerConfigs)}
+            </div>
         );
     }
 };
 
 export = class App {
 
-    public showBanner(promoBannerProps: any): void {
+    public showBanner(bannerConfigs: BannerData[], position: 'top' | 'bottom'): void {
         ReactDOM.render(
             <ConfigProvider>
                 <AdaptivityProvider>
-                    <WebViewBanner promoBannerProps={promoBannerProps} />
+                    <AppRoot mode='partial'>
+                        <View activePanel='promo'>
+                            {/* <Panel id='promo'> */}
+                            <FixedLayout id="promo" vertical={position}>
+                                <WebViewBanner bannerConfigs={bannerConfigs} />
+                            </FixedLayout>
+                            {/* </Panel> */}
+                        </View>
+                    </AppRoot>
                 </AdaptivityProvider>
             </ConfigProvider>,
             document.getElementById('vk-container')
