@@ -38,6 +38,9 @@ local function update_log(self)
         self.log_size.y = 200
     end
     self.log_scroll:set_size(self.log_size)
+    -- local pos = gui.get_position(self.log_scroll_content)
+    -- pos.y = 100 + self.log_size.y - 200
+    -- gui.set_position(self.log_scroll_content, pos)
     self.log_scroll:scroll_to_percent(self.percent_y_100)
 end
 
@@ -53,12 +56,16 @@ local function print_log(self, method, data)
         end
     end
     self.logs = self.logs .. text .. "\n"
+    local max = 2000
+    local length = #self.logs
+    if length > max then
+        self.logs = self.logs:sub(length - max, -1)
+    end
     gui.set_text(self.log_text, self.logs)
     update_log(self)
 end
 
 local function on_subscribe(self, response)
-    -- pprint("subscribe", response)
     print_log(self, "subscribe", response)
 end
 

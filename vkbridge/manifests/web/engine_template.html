@@ -62,7 +62,7 @@
 
             VkBridgeHelper.init = function () {
                 load_script("https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js", function () {
-                    if (vkBridge.isWebView() || true) {
+                    if (vkBridge.isWebView()) {
                         load_script("vkui-4.25.2.min.js?version={{{project.version}}}", function () {
                             VkBridgeHelper.app = new App();
                             send(VKBRIDGE_SUBSCRIBE_ID, "subscribe", { type: "VKUIInitResult", result: true });

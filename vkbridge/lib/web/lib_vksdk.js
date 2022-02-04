@@ -6,7 +6,7 @@ var LibVkBridge = {
         _callback_empty: null,
         _callback_number: null,
         _callback_bool: null,
-        _wv_banner_configs: { position: "top", count: 1 },
+        _wv_banner_configs: { position: "top", count: 1, scheme: "vkcom_light" },
 
         parseJson: function (json) {
             try {
@@ -138,28 +138,20 @@ var LibVkBridge = {
         self._wv_banner_configs.count = count;
     },
 
-    VkBridgeLibrary_ShowWebViewBanner: function (cb_id) {
+    VkBridgeLibrary_ShowWebViewBanner: async function (cb_id) {
         var self = VkBridgeLibrary;
         try {
             if (self._wv_banner_configs.count === 0) {
                 self.send(cb_id, null, JSON.stringify({ count: 0, result: true }));
             } else {
-                // var promises = [];
-                // var prom;
-                // for (let i = 0; i < self._wv_banner_configs.count; i++) {
-                //     prom = self._vkBridge.send("VKWebAppGetAds", {});
-                //     promises.push(prom);
-                // }
-                // Promise.all(promises)
-                self.send(cb_id, null, JSON.stringify({ type: "VKWebAppGetAds", start: true, position: self._wv_banner_configs.position }));
-                self._vkBridge.send("VKWebAppGetAds", {})
-                    .then((values) => {
-                        VkBridgeHelper.app.showBanner([values], self._wv_banner_configs.position);
-                        self.send(cb_id, null, JSON.stringify({ result: true }));
-                    })
-                    .catch((err) => {
-                        self.send(cb_id, "error", VkBridgeHelper.conver_error(err));
-                    });
+                var values = [];
+                var value;
+                for (let i = 0; i < self._wv_banner_configs.count; i++) {
+                    value = await self._vkBridge.send("VKWebAppGetAds", {})
+                    values.push(value);
+                }
+                VkBridgeHelper.app.showBanner(values, self._wv_banner_configs.position);
+                self.send(cb_id, null, JSON.stringify({ result: true }));
             }
         } catch (err) {
             self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(err));

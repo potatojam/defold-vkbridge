@@ -129,7 +129,7 @@ end
 ---Returns `true` if VK Bridge is running in mobile app, or `false` if not
 ---@return boolean
 function M.is_webview()
-    return M.is_webview_ch or true -- TODO remove
+    return M.is_webview_ch
 end
 
 ---Returns `true` if VK Bridge is running in standalone app, or `false` if not
@@ -219,6 +219,7 @@ end
 ---@param count number `optional` Number of banners in a column.
 function M.set_wv_banner_configs(position, count)
     assert(M.is_webview() == true, "Webview is not available. Available for mobile only.")
+    assert(position == nil or position == "top" or position == "bottom", "The position can only be \"top\" or \"bottom\".")
     vkbridge_private.set_wv_banner_configs(position or "top", count or 1)
 end
 
