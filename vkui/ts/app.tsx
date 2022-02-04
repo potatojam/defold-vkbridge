@@ -90,14 +90,14 @@ class WebViewBanner extends React.Component {
 
 export = class App {
 
-    public showBanner(bannerConfigs: BannerData[], position: 'top' | 'bottom'): void {
+    public showBanner(bannerConfigs: BannerData[], position: 'top' | 'bottom', scheme: 'light' | 'dark'): void {
         ReactDOM.render(
-            <ConfigProvider>
+            <ConfigProvider appearance={scheme}>
                 <AdaptivityProvider>
                     <AppRoot mode='partial'>
                         <View activePanel='promo'>
                             {/* <Panel id='promo'> */}
-                            <FixedLayout id="promo" vertical={position}>
+                            <FixedLayout id='promo' vertical={position}>
                                 <WebViewBanner bannerConfigs={bannerConfigs} />
                             </FixedLayout>
                             {/* </Panel> */}

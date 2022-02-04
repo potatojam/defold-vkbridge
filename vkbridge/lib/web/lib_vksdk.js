@@ -6,7 +6,7 @@ var LibVkBridge = {
         _callback_empty: null,
         _callback_number: null,
         _callback_bool: null,
-        _wv_banner_configs: { position: "top", count: 1, scheme: "vkcom_light" },
+        _wv_banner_configs: { position: "top", count: 1, scheme: "light" },
 
         parseJson: function (json) {
             try {
@@ -19,9 +19,13 @@ var LibVkBridge = {
         send: function (cb_id, message_id, message) {
             if (VkBridgeLibrary._callback_object) {
                 // 0 and 1 are reserved IDs
-                if (cb_id == 0 && message_id == "init") {
+                if (cb_id == VkBridgeHelper.VKBRIDGE_INIT_ID && message_id == "init") {
                     VkBridgeLibrary._vkBridge = message;
                     message = undefined;
+                } else if (cb_id == VkBridgeHelper.VKBRIDGE_SUBSCRIBE_ID && message_id == "subscribe") {
+                    if (message && message.detail && message.detail.type === "VKWebAppUpdateConfig") {
+                        VkBridgeLibrary._wv_banner_configs.scheme = message.detail.data.scheme.replace('vkcom_', '');
+                    }
                 }
 
                 var cmsg_id = 0;
@@ -150,7 +154,7 @@ var LibVkBridge = {
                     value = await self._vkBridge.send("VKWebAppGetAds", {})
                     values.push(value);
                 }
-                VkBridgeHelper.app.showBanner(values, self._wv_banner_configs.position);
+                VkBridgeHelper.app.showBanner(values, self._wv_banner_configs.position, self._wv_banner_configs.scheme);
                 self.send(cb_id, null, JSON.stringify({ result: true }));
             }
         } catch (err) {
