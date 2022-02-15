@@ -6,7 +6,10 @@ var LibVkBridge = {
         _callback_empty: null,
         _callback_number: null,
         _callback_bool: null,
+        _banners: [],
         _wv_banner_configs: { position: "top", count: 1, scheme: "light" },
+        _BANNER_VK: "vk",
+        _BANNER_YA: "ya",
 
         parseJson: function (json) {
             try {
@@ -148,20 +151,12 @@ var LibVkBridge = {
             if (self._wv_banner_configs.count === 0) {
                 self.send(cb_id, null, JSON.stringify({ count: 0, result: true }));
             } else {
-                // VkBridgeHelper.send_subscribe({ type: "VKWebAppGetAdsSt" })
                 var values = [];
                 for (let i = 0; i < self._wv_banner_configs.count; i++) {
-                    VkBridgeHelper.send_subscribe({ type: "VKWebAppGetAdsN", i: i })
-                    var value = await self._vkBridge.send("VKWebAppGetAds")
-                    // .then((values) => {
-                    //     VkBridgeHelper.send_subscribe({ type: "VKWebAppGetAdsNX", i: i })
-                    // })
-                    // .catch((err) => {
-                    //     self.send(cb_id, "error", VkBridgeHelper.conver_error(err));
-                    // });
+                    VkBridgeHelper.send_subscribe({ type: "VKWebAppGetAdsN", i: i });
+                    var value = await self._vkBridge.send("VKWebAppGetAds");
                     values.push(value);
                 }
-                // VkBridgeHelper.send_subscribe({ type: "VKWebAppGetAdsN", scheme: self._wv_banner_configs.scheme })
                 VkBridgeHelper.app.showBanner(values, self._wv_banner_configs.position, self._wv_banner_configs.scheme);
                 self.send(cb_id, null, JSON.stringify({ result: true }));
             }
@@ -202,6 +197,42 @@ var LibVkBridge = {
     VkBridgeLibrary_isIframe: function () {
         return VkBridgeLibrary._vkBridge.isIframe();
     },
+
+    loadScript: function (banner_type, cb_id, src, w, d, n, s, t) {
+        var self = VkBridgeLibrary;
+        w[n] = w[n] || [];
+        w[n].push(function () {
+            self.send(cb_id, JSON.stringify({ result: true, type: banner_type }));
+        });
+        t = d.getElementsByTagName("script")[0];
+        s = d.createElement("script");
+        s.type = "text/javascript";
+        s.src = src;
+        s.async = true;
+        s.onerror = () => {
+            self.send(cb_id, "Error loading SDK. Type: " + banner_type);
+        };
+        t.parentNode.insertBefore(s, t);
+    },
+
+    VkBridgeLibrary_Banner_Init: function (type, cb_id) {
+        var self = VkBridgeLibrary;
+        var banner_type = UTF8ToString(type);
+
+        if (banner_type == self._BANNER_YA) {
+            loadScript(banner_type, cb_id, "//an.yandex.ru/system/context.js", window, window.document, "yandexContextAsyncCallbacks");
+        } else if (banner_type == self._BANNER_VK) {
+            if (window.VK && VK.Widgets) {
+                self.send(cb_id, null, JSON.stringify({ result: true, type: banner_type }));
+            } else {
+                var protocol = ((location.protocol === 'https:') ? 'https:' : 'http:');
+                loadScript(banner_type, cb_id, protocol + "//vk.com/js/api/openapi.js?169", window, window.document, "vkAsyncInitCallbacks");
+            }
+        } else {
+            self.send(cb_id, "Error loading SDK. Wrong type: " + banner_type);
+        }
+    },
+
 };
 
 autoAddDeps(LibVkBridge, "$VkBridgeLibrary");
