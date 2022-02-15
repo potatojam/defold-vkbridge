@@ -215,7 +215,7 @@ function M.get_user_info(callback)
 end
 
 ---Set WebView banner configs. Available for mobile only.
----@param position string `optional` Banner location. Can be `top` or `bottom`. Default `top`
+---@param position string Banner location. Can be `top` or `bottom`. Default `top`
 ---@param count number `optional` Number of banners in a column.
 function M.set_wv_banner_configs(position, count)
     assert(M.is_webview() == true, "Webview is not available. Available for mobile only.")

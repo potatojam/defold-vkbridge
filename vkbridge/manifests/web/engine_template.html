@@ -7,6 +7,7 @@
             var VkBridgeHelper = window.VkBridgeHelper
             VkBridgeHelper.VKBRIDGE_INIT_ID = 0
             VkBridgeHelper.VKBRIDGE_SUBSCRIBE_ID = 1
+            VkBridgeHelper.wv_banners = "{{{vk_bridge.wv_banners}}}" === "true";
 
             VkBridgeHelper.msgQueue = [];
             var send = function (cb_id, message_id, message) {
@@ -65,7 +66,7 @@
 
             VkBridgeHelper.init = function () {
                 load_script("https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js", function () {
-                    if (vkBridge.isWebView()) {
+                    if (vkBridge.isWebView() && VkBridgeHelper.wv_banners) {
                         load_script("vkui-4.25.2.min.js?version={{{project.version}}}", function () {
                             VkBridgeHelper.app = new App();
                             VkBridgeHelper.send_subscribe({ type: "VKUIInitResult", result: true });

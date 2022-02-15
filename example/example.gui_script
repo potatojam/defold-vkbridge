@@ -88,7 +88,7 @@ local function on_init_vk(self)
             show_boolean("txt_is_iframe", vkbridge.is_iframe())
             show_boolean("txt_is_embedded", vkbridge.is_embedded())
             if vkbridge.is_webview() then
-                vkbridge.set_wv_banner_configs("top", 2)
+                vkbridge.set_wv_banner_configs("top", 1)
             end
         end
     end)

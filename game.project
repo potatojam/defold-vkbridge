@@ -26,6 +26,7 @@ engine_arguments = --verify-graphics-calls=false
 
 [vk_bridge]
 auto_init = true
+wv_banners = true
 
 [input]
 game_binding = /input/game.input_bindingc

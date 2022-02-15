@@ -46,9 +46,11 @@ end
 ```ini
 [vk_bridge]
 auto_init = true
+wv_banners = true
 ```
 
 * `auto_init` - The application initializes the **VKBridge** on startup. To prevent **VKBridge** from being initialized, set `false`. Then the initialization will be when `vkbridge.init(init_handler)` is called.
+* `wv_banners` - Loads a script containing a [WebView banner](#webview-banner).
 
 ## Lua API
 
@@ -188,6 +190,34 @@ Allows you to get basic data about the profile of the user who launched the appl
 
 - `callback` <kbd>function</kbd> _required_ callback with response data
 
+## WebView Banner
+
+WebView Banner is a banner which is displayed either above or below the application. It is available only for mobile devices running in the VKontakte application.
+
+![WebView Banner](docs/wv-banners.jpg)
+
+Be sure to enable **wv_banners = true** in the **game.project**.
+
+### `vkbridge.show_wv_banner(callback)`
+
+Show WebView banner. Calling show again will `refresh` the banner.
+
+**Parameters**
+
+- `callback` <kbd>function</kbd> _required_ callback with response data
+
+### `vkbridge.hide_wv_banner()`
+
+Hide WebView banner. Returns `true` on success.
+
+### `vkbridge.set_wv_banner_configs(position, count)`
+
+Set WebView banner configs.
+
+**Parameters**
+
+- `position` <kbd>string</kbd> _required_ Banner location. Can be `top` or `bottom`.
+- `count` <kbd>number</kbd> Number of banners in a column. Default `1`
 
 ## Credits
 
