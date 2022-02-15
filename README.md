@@ -105,15 +105,15 @@ Returns `true` if VK Bridge is running in mobile app, or `false` if not
 
 ### `vkbridge.is_iframe()`
 
----Returns `true` if VK Bridge is running in iframe, or `false` if not
+Returns `true` if VK Bridge is running in iframe, or `false` if not
 
 ### `vkbridge.is_embedded()`
 
----Returns `true` if VK Bridge is running in embedded app, or `false` if not
+Returns `true` if VK Bridge is running in embedded app, or `false` if not
 
 ### `vkbridge.is_standalone()`
 
----Returns `true` if VK Bridge is running in standalone app, or `false` if not
+Returns `true` if VK Bridge is running in standalone app, or `false` if not
 
 ## Additional Lua API
 
