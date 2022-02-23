@@ -6,10 +6,9 @@ var LibVkBridge = {
         _callback_empty: null,
         _callback_number: null,
         _callback_bool: null,
-        _banners: [],
+        _wv_banner_data: null,
+        _is_wv_banner_showed: false,
         _wv_banner_configs: { position: "top", count: 1, scheme: "light" },
-        _BANNER_VK: "vk",
-        _BANNER_YA: "ya",
 
         parseJson: function (json) {
             try {
@@ -145,11 +144,12 @@ var LibVkBridge = {
         self._wv_banner_configs.count = count;
     },
 
-    VkBridgeLibrary_ShowWebViewBanner: async function (cb_id) {
+    loadBannerData: async function () {
         var self = VkBridgeLibrary;
+        var response = {result: true};
         try {
             if (self._wv_banner_configs.count === 0) {
-                self.send(cb_id, null, JSON.stringify({ count: 0, result: true }));
+                self._wv_banner_data = [];
             } else {
                 var values = [];
                 for (let i = 0; i < self._wv_banner_configs.count; i++) {
@@ -157,21 +157,73 @@ var LibVkBridge = {
                     var value = await self._vkBridge.send("VKWebAppGetAds");
                     values.push(value);
                 }
-                VkBridgeHelper.app.showBanner(values, self._wv_banner_configs.position, self._wv_banner_configs.scheme);
-                self.send(cb_id, null, JSON.stringify({ result: true }));
+                self._wv_banner_data = values;
             }
         } catch (err) {
-            self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(err));
+            response.result = false;
+            response.err = err;
+        }
+        return response;
+    },
+
+    VkBridgeLibrary_LoadWebViewBanner: function (cb_id) {
+        var self = VkBridgeLibrary;
+        var response = self.loadBannerData();
+        if (response.result) {
+            self.send(cb_id, null, JSON.stringify({ result: true }));
+        } else {
+            self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(response.err));
+        }
+    },
+
+    VkBridgeLibrary_UnloadWebViewBanner: function () {
+        var result = true;
+        try {
+            VkBridgeLibrary._wv_banner_data = null;
+            result = self.VkBridgeLibrary_HideWebViewBanner();
+        } catch (err) {
+            result = false;
+        }
+        return result;
+    },
+
+    VkBridgeLibrary_ShowWebViewBanner: function () {
+        var self = VkBridgeLibrary;
+        if (!self._wv_banner_data) {
+            return false;
+        }
+        var result = true;
+        try {
+            VkBridgeHelper.app.showBanner(self._wv_banner_data, self._wv_banner_configs.position, self._wv_banner_configs.scheme);
+            self._is_wv_banner_showed = true;
+        } catch (err) {
+            result = false;
+        }
+        return result;
+    },
+
+    VkBridgeLibrary_RefreshWebViewBanner: function (cb_id) {
+        var self = VkBridgeLibrary;
+        var response = self.loadBannerData();
+        if (response.result) {
+            if (self._is_wv_banner_showed) {
+                self.VkBridgeLibrary_ShowWebViewBanner();
+            }
+            self.send(cb_id, null, JSON.stringify({ result: true }));
+        } else {
+            self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(response.err));
         }
     },
 
     VkBridgeLibrary_HideWebViewBanner: function () {
         var result = true;
         try {
-            VkBridgeHelper.app.hideBanner();
+            if (self._is_wv_banner_showed) {
+                VkBridgeHelper.app.hideBanner();
+                self._is_wv_banner_showed = false;
+            }
         } catch (err) {
             result = false;
-            // TODO handle error
         }
         return result;
     },
@@ -196,43 +248,7 @@ var LibVkBridge = {
 
     VkBridgeLibrary_isIframe: function () {
         return VkBridgeLibrary._vkBridge.isIframe();
-    },
-
-    loadScript: function (banner_type, cb_id, src, w, d, n, s, t) {
-        var self = VkBridgeLibrary;
-        w[n] = w[n] || [];
-        w[n].push(function () {
-            self.send(cb_id, JSON.stringify({ result: true, type: banner_type }));
-        });
-        t = d.getElementsByTagName("script")[0];
-        s = d.createElement("script");
-        s.type = "text/javascript";
-        s.src = src;
-        s.async = true;
-        s.onerror = () => {
-            self.send(cb_id, "Error loading SDK. Type: " + banner_type);
-        };
-        t.parentNode.insertBefore(s, t);
-    },
-
-    VkBridgeLibrary_Banner_Init: function (type, cb_id) {
-        var self = VkBridgeLibrary;
-        var banner_type = UTF8ToString(type);
-
-        if (banner_type == self._BANNER_YA) {
-            loadScript(banner_type, cb_id, "//an.yandex.ru/system/context.js", window, window.document, "yandexContextAsyncCallbacks");
-        } else if (banner_type == self._BANNER_VK) {
-            if (window.VK && VK.Widgets) {
-                self.send(cb_id, null, JSON.stringify({ result: true, type: banner_type }));
-            } else {
-                var protocol = ((location.protocol === 'https:') ? 'https:' : 'http:');
-                loadScript(banner_type, cb_id, protocol + "//vk.com/js/api/openapi.js?169", window, window.document, "vkAsyncInitCallbacks");
-            }
-        } else {
-            self.send(cb_id, "Error loading SDK. Wrong type: " + banner_type);
-        }
-    },
-
+    }
 };
 
 autoAddDeps(LibVkBridge, "$VkBridgeLibrary");
