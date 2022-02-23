@@ -60,9 +60,13 @@ VKBridge JavaScript SDK uses ES6 Promise for asynchronous operations. For Lua AP
 - `err` <kbd>table</kbd> - Error code if something went wrong. If successful: `err = nil`.
 - `result` <kbd>table</kbd> - Data if the operation should return something.
 
-### `vkbridge.init()`
+### `vkbridge.init(callback)`
 
 Initialize the Vk Bridge
+
+**Parameters**
+
+- `callback` <kbd>function</kbd> _required_ callback with response data
 
 ### `vkbridge.send(name, [, data[, callback]])`
 
@@ -135,7 +139,7 @@ Show interstitial ads
 
 - `callback` <kbd>function</kbd> _required_ callback with response data
 
-### `vkbridge.check_rewarded(callback)`
+### `vkbridge.check_rewarded(use_waterfall, callback)`
 
 Check if there is the rewarded ad available to serve
 
@@ -144,7 +148,7 @@ Check if there is the rewarded ad available to serve
 - `use_waterfall` <kbd>boolean</kbd> _required_ Whether to use the mechanism for displaying interstitial advertising in the absence of rewarded video.
 - `callback` <kbd>function</kbd> _required_ callback with response data
 
-### `vkbridge.show_rewarded(callback)`
+### `vkbridge.show_rewarded(use_waterfall, callback)`
 
 Show rewarded ads
 

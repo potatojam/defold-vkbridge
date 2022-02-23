@@ -95,4 +95,21 @@ end
 function vkbridge.get_user_info(callback)
 end
 
+---Set WebView banner configs. Available for mobile only.
+---@param position string Banner location. Can be `top` or `bottom`. Default `top`
+---@param count number `optional` Number of banners in a column.
+function vkbridge.set_wv_banner_configs(position, count)
+end
+
+---Show WebView banner. Available for mobile only.
+---Calling show again will `refresh` the banner.
+---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
+function vkbridge.show_wv_banner(callback)
+end
+
+---Hide WebView banner. Returns `true` on success. Available for mobile only.
+---@return boolean
+function vkbridge.hide_wv_banner()
+end
+
 return vkbridge
