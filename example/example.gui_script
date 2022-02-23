@@ -47,7 +47,7 @@ end
 local function print_log(self, method, data)
     pprint(method, data)
     local text = "[" .. os.date("%H:%M:%S") .. "] " .. method .. ": "
-    if data then
+    if data or data == false then
         if type(data) == "table" then
             text = text .. serializeTable(data)
         else

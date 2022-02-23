@@ -231,6 +231,7 @@ function M.load_wv_banner(callback)
 end
 
 ---Unload WebView banner. Available for mobile only.
+---Return `true` on success.
 ---@return boolean
 function M.unload_wv_banner()
     assert(M.is_webview() == true, "Webview is not available. Available for mobile only.")
@@ -245,6 +246,7 @@ function M.refresh_wv_banner(callback)
 end
 
 ---Show WebView banner. Available for mobile only.
+---Return `true` on success.
 ---@return boolean
 function M.show_wv_banner()
     assert(M.is_webview() == true, "Webview is not available. Available for mobile only.")
@@ -252,6 +254,7 @@ function M.show_wv_banner()
 end
 
 ---Hide WebView banner. Returns `true` on success. Available for mobile only.
+---Return `true` on success.
 ---@return boolean
 function M.hide_wv_banner()
     assert(M.is_webview() == true, "Webview is not available. Available for mobile only.")

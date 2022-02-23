@@ -75,6 +75,56 @@ var LibVkBridge = {
                 VkBridgeLibrary.send(cb_id, message_id, message);
             }, 0);
         },
+
+        loadBannerData: async function () {
+            var self = VkBridgeLibrary;
+            var response = {result: true};
+            try {
+                if (self._wv_banner_configs.count === 0) {
+                    self._wv_banner_data = [];
+                } else {
+                    var values = [];
+                    for (let i = 0; i < self._wv_banner_configs.count; i++) {
+                        var value = await self._vkBridge.send("VKWebAppGetAds");
+                        values.push(value);
+                    }
+                    self._wv_banner_data = values;
+                }
+            } catch (err) {
+                response.result = false;
+                response.err = err;
+            }
+            return response;
+        },
+
+        showWebViewBanner: function () {
+            var self = VkBridgeLibrary;
+            if (!self._wv_banner_data) {
+                return false;
+            }
+            var result = true;
+            try {
+                VkBridgeHelper.app.showBanner(self._wv_banner_data, self._wv_banner_configs.position, self._wv_banner_configs.scheme);
+                self._is_wv_banner_showed = true;
+            } catch (err) {
+                result = false;
+            }
+            return result;
+        },
+
+        hideWebViewBanner: function () {
+            var self = VkBridgeLibrary;
+            var result = true;
+            try {
+                if (self._is_wv_banner_showed) {
+                    VkBridgeHelper.app.hideBanner();
+                    self._is_wv_banner_showed = false;
+                }
+            } catch (err) {
+                result = false;
+            }
+            return result;
+        }
     },
 
     VkBridgeLibrary_RegisterCallbacks: function (
@@ -131,10 +181,10 @@ var LibVkBridge = {
                     }
                 })
                 .catch((err) => {
-                    self.send(cb_id, "error", VkBridgeHelper.conver_error(err));
+                    self.send(cb_id, "error", VkBridgeHelper.conver_error(err.toString()));
                 });
         } catch (err) {
-            self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(err));
+            self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(err.toString()));
         }
     },
 
@@ -144,43 +194,30 @@ var LibVkBridge = {
         self._wv_banner_configs.count = count;
     },
 
-    loadBannerData: async function () {
+    VkBridgeLibrary_LoadWebViewBanner: async function (cb_id) {
         var self = VkBridgeLibrary;
-        var response = {result: true};
         try {
-            if (self._wv_banner_configs.count === 0) {
-                self._wv_banner_data = [];
+            var response = await self.loadBannerData();
+            if (response.result) {
+                self.send(cb_id, null, JSON.stringify({ result: true }));
             } else {
-                var values = [];
-                for (let i = 0; i < self._wv_banner_configs.count; i++) {
-                    VkBridgeHelper.send_subscribe({ type: "VKWebAppGetAdsN", i: i });
-                    var value = await self._vkBridge.send("VKWebAppGetAds");
-                    values.push(value);
+                if (response.err) {
+                    self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(response.err.toString()));
+                } else {
+                    self.delaySend(cb_id, "error", VkBridgeHelper.conver_error("Error loading banner"));
                 }
-                self._wv_banner_data = values;
             }
         } catch (err) {
-            response.result = false;
-            response.err = err;
-        }
-        return response;
-    },
-
-    VkBridgeLibrary_LoadWebViewBanner: function (cb_id) {
-        var self = VkBridgeLibrary;
-        var response = self.loadBannerData();
-        if (response.result) {
-            self.send(cb_id, null, JSON.stringify({ result: true }));
-        } else {
-            self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(response.err));
+            self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(err.toString()));
         }
     },
 
     VkBridgeLibrary_UnloadWebViewBanner: function () {
+        var self = VkBridgeLibrary;
         var result = true;
         try {
-            VkBridgeLibrary._wv_banner_data = null;
-            result = self.VkBridgeLibrary_HideWebViewBanner();
+            self._wv_banner_data = null;
+            result = self.hideWebViewBanner();
         } catch (err) {
             result = false;
         }
@@ -188,44 +225,28 @@ var LibVkBridge = {
     },
 
     VkBridgeLibrary_ShowWebViewBanner: function () {
-        var self = VkBridgeLibrary;
-        if (!self._wv_banner_data) {
-            return false;
-        }
-        var result = true;
-        try {
-            VkBridgeHelper.app.showBanner(self._wv_banner_data, self._wv_banner_configs.position, self._wv_banner_configs.scheme);
-            self._is_wv_banner_showed = true;
-        } catch (err) {
-            result = false;
-        }
-        return result;
+        return VkBridgeLibrary.showWebViewBanner();
     },
 
-    VkBridgeLibrary_RefreshWebViewBanner: function (cb_id) {
+    VkBridgeLibrary_RefreshWebViewBanner: async function (cb_id) {
         var self = VkBridgeLibrary;
-        var response = self.loadBannerData();
+        var response = await self.loadBannerData();
         if (response.result) {
             if (self._is_wv_banner_showed) {
-                self.VkBridgeLibrary_ShowWebViewBanner();
+                self.showWebViewBanner();
             }
             self.send(cb_id, null, JSON.stringify({ result: true }));
         } else {
-            self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(response.err));
+            if (response.err) {
+                self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(response.err.toString()));
+            } else {
+                self.delaySend(cb_id, "error", VkBridgeHelper.conver_error("Error refreshing banner"));
+            }
         }
     },
 
     VkBridgeLibrary_HideWebViewBanner: function () {
-        var result = true;
-        try {
-            if (self._is_wv_banner_showed) {
-                VkBridgeHelper.app.hideBanner();
-                self._is_wv_banner_showed = false;
-            }
-        } catch (err) {
-            result = false;
-        }
-        return result;
+        return VkBridgeLibrary.hideWebViewBanner();
     },
 
     VkBridgeLibrary_Supports: function (name) {

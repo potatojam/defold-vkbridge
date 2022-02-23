@@ -202,17 +202,33 @@ WebView Banner is a banner which is displayed either above or below the applicat
 
 Be sure to enable **wv_banners = true** in the **game.project**.
 
-### `vkbridge.show_wv_banner(callback)`
+### `vkbridge.load_wv_banner(callback)`
 
-Show WebView banner. Calling show again will `refresh` the banner.
+Load WebView banner. Available for mobile only.
 
 **Parameters**
 
 - `callback` <kbd>function</kbd> _required_ callback with response data
 
+### `vkbridge.unload_wv_banner()`
+
+Unload WebView banner. Available for mobile only. Return `true` on success.
+
+### `vkbridge.show_wv_banner()`
+
+Show WebView banner. Available for mobile only. Return `true` on success.
+
 ### `vkbridge.hide_wv_banner()`
 
 Hide WebView banner. Returns `true` on success.
+
+### `vkbridge.refresh_wv_banner(callback)`
+
+Refresh WebView banner. Available for mobile only.
+
+**Parameters**
+
+- `callback` <kbd>function</kbd> _required_ callback with response data
 
 ### `vkbridge.set_wv_banner_configs(position, count)`
 
