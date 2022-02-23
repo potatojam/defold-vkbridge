@@ -223,15 +223,38 @@ function M.set_wv_banner_configs(position, count)
     vkbridge_private.set_wv_banner_configs(position or "top", count or 1)
 end
 
----Show WebView banner. Available for mobile only.
----Calling show again will `refresh` the banner.
+---Load WebView banner. Available for mobile only.
 ---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
-function M.show_wv_banner(callback)
+function M.load_wv_banner(callback)
     assert(M.is_webview() == true, "Webview is not available. Available for mobile only.")
-    vkbridge_private.show_wv_banner(auto_handle(callback))
+    vkbridge_private.load_wv_banner(auto_handle(callback))
+end
+
+---Unload WebView banner. Available for mobile only.
+---Return `true` on success.
+---@return boolean
+function M.unload_wv_banner()
+    assert(M.is_webview() == true, "Webview is not available. Available for mobile only.")
+    return vkbridge_private.unload_wv_banner()
+end
+
+---Refresh WebView banner. Available for mobile only.
+---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
+function M.refresh_wv_banner(callback)
+    assert(M.is_webview() == true, "Webview is not available. Available for mobile only.")
+    vkbridge_private.refresh_wv_banner(auto_handle(callback))
+end
+
+---Show WebView banner. Available for mobile only.
+---Return `true` on success.
+---@return boolean
+function M.show_wv_banner()
+    assert(M.is_webview() == true, "Webview is not available. Available for mobile only.")
+    return vkbridge_private.show_wv_banner()
 end
 
 ---Hide WebView banner. Returns `true` on success. Available for mobile only.
+---Return `true` on success.
 ---@return boolean
 function M.hide_wv_banner()
     assert(M.is_webview() == true, "Webview is not available. Available for mobile only.")

@@ -101,13 +101,30 @@ end
 function vkbridge.set_wv_banner_configs(position, count)
 end
 
----Show WebView banner. Available for mobile only.
----Calling show again will `refresh` the banner.
+---Load WebView banner. Available for mobile only.
 ---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
-function vkbridge.show_wv_banner(callback)
+function vkbridge.load_wv_banner(callback)
+end
+
+---Unload WebView banner. Available for mobile only.
+---Return `true` on success.
+---@return boolean
+function vkbridge.unload_wv_banner()
+end
+
+---Refresh WebView banner. Available for mobile only.
+---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
+function vkbridge.refresh_wv_banner(callback)
+end
+
+---Show WebView banner. Available for mobile only.
+---Return `true` on success.
+---@return boolean
+function vkbridge.show_wv_banner()
 end
 
 ---Hide WebView banner. Returns `true` on success. Available for mobile only.
+---Return `true` on success.
 ---@return boolean
 function vkbridge.hide_wv_banner()
 end

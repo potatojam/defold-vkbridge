@@ -47,7 +47,7 @@ end
 local function print_log(self, method, data)
     pprint(method, data)
     local text = "[" .. os.date("%H:%M:%S") .. "] " .. method .. ": "
-    if data then
+    if data or data == false then
         if type(data) == "table" then
             text = text .. serializeTable(data)
         else
@@ -142,10 +142,26 @@ local function on_get_user_info(self)
     end)
 end
 
-local function on_show_webview_banner(self)
-    vkbridge.show_wv_banner(function(self, err, data)
-        print_log(self, "show_webview_banner", err or data)
+local function on_load_webview_banner(self)
+    vkbridge.load_wv_banner(function(self, err, data)
+        print_log(self, "load_wv_banner", err or data)
     end)
+end
+
+local function on_refresh_webview_banner(self)
+    vkbridge.refresh_wv_banner(function(self, err, data)
+        print_log(self, "load_refresh_banner", err or data)
+    end)
+end
+
+local function on_unload_webview_banner(self)
+    local result = vkbridge.unload_wv_banner()
+    print_log(self, "unload_wv_banner", result)
+end
+
+local function on_show_webview_banner(self)
+    local result = vkbridge.show_wv_banner()
+    print_log(self, "show_wv_banner", result)
 end
 
 local function on_hide_webview_banner(self)
@@ -177,6 +193,9 @@ function init(self)
     self.druid:new_button("btn_get_user_info", on_get_user_info)
     self.druid:new_button("btn_show_webview_banner", on_show_webview_banner)
     self.druid:new_button("btn_hide_webview_banner", on_hide_webview_banner)
+    self.druid:new_button("btn_load_webview_banner", on_load_webview_banner)
+    self.druid:new_button("btn_unload_webview_banner", on_unload_webview_banner)
+    self.druid:new_button("btn_refresh_webview_banner", on_refresh_webview_banner)
 
     print_log(self, "init", "version: " .. sys.get_config("project.version"))
     on_init_vk()

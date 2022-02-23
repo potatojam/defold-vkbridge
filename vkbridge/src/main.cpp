@@ -13,9 +13,12 @@
 extern "C"
 {
     void VkBridgeLibrary_Init();
-    void VkBridgeLibrary_SetWebViewBannerConfigs(const char *position, const int count);
     void VkBridgeLibrary_Send(const int cb_id, const char *name, const char *cdata);
-    void VkBridgeLibrary_ShowWebViewBanner(const int cb_id);
+    void VkBridgeLibrary_SetWebViewBannerConfigs(const char *position, const int count);
+    void VkBridgeLibrary_LoadWebViewBanner(const int cb_id);
+    void VkBridgeLibrary_RefreshWebViewBanner(const int cb_id);
+    const bool VkBridgeLibrary_UnloadWebViewBanner();
+    const bool VkBridgeLibrary_ShowWebViewBanner();
     const bool VkBridgeLibrary_HideWebViewBanner();
     const bool VkBridgeLibrary_Supports(const char *name);
     const bool VkBridgeLibrary_isWebView();
@@ -62,10 +65,28 @@ static int SetWVBannerConfigs(lua_State *L)
     return 0;
 }
 
+static int LoadWVBanner(lua_State *L)
+{
+    VkBridgeLibrary_LoadWebViewBanner(luaL_checkint(L, 1));
+    return 0;
+}
+
+static int RefreshWVBanner(lua_State *L)
+{
+    VkBridgeLibrary_RefreshWebViewBanner(luaL_checkint(L, 1));
+    return 0;
+}
+
+static int UnloadWVBanner(lua_State *L)
+{
+    lua_pushboolean(L, VkBridgeLibrary_UnloadWebViewBanner());
+    return 1;
+}
+
 static int ShowWVBanner(lua_State *L)
 {
-    VkBridgeLibrary_ShowWebViewBanner(luaL_checkint(L, 1));
-    return 0;
+    lua_pushboolean(L, VkBridgeLibrary_ShowWebViewBanner());
+    return 1;
 }
 
 static int HideWVBanner(lua_State *L)
@@ -118,6 +139,9 @@ static const luaL_reg Module_methods[] =
         {"is_iframe", IsIframe},
         {"is_embedded", IsEmbedded},
         {"set_wv_banner_configs", SetWVBannerConfigs},
+        {"load_wv_banner", LoadWVBanner},
+        {"unload_wv_banner", UnloadWVBanner},
+        {"refresh_wv_banner", RefreshWVBanner},
         {"show_wv_banner", ShowWVBanner},
         {"hide_wv_banner", HideWVBanner},
         {0, 0}};
