@@ -42,28 +42,34 @@ function M.get_save_value(limit)
     return tostring(limit.count) .. ";" .. tostring(limit.time)
 end
 
----Check timer limit. If the limit is exceeded, then it is reset. Returns `true` if the limit has been exceeded
+---Check timer limit. Returns `true` if the limit has been exceeded
 ---@param limit table limit object
 ---@return boolean
-function M.check_time_limit(limit)
+function M.is_time_exceeded(limit)
     if not limit.active then
         return false
     end
+    return socket.gettime() - limit.time < limit.reset_time
+end
+
+---Reset time limit if it need
+---@param limit table
+function M.reset_time(limit)
     if socket.gettime() - limit.time >= limit.reset_time then
         limit.count = 0
         limit.time = socket.gettime()
-        return false
     end
-    return true
 end
 
----Check timer and check available ads. Returns `true` if the limit has been exceeded
+---Check timer and check available ads. Reset time if limit exceeded. Returns `true` if the limit has been exceeded
 ---@param limit table limit object
 ---@return boolean
-function M.check(limit)
-    M.check_time_limit(limit)
-
-    if limit.count <= limit.max then
+function M.is_count_exceeded(limit)
+    if not limit.active then
+        return false
+    end
+    M.reset_time(limit)
+    if limit.count < limit.max then
         return false
     end
     return true

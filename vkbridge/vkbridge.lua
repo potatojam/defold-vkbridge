@@ -36,7 +36,7 @@ end
 
 local function init_limits(self)
     interstitial_day_limit = limit.create_limit("interstitial_day_limit", 24 * 60 * 60)
-    interstitial_hour_limit = limit.create_limit("interstitial_hour_limit", 60 * 60)
+    interstitial_hour_limit = limit.create_limit("interstitial_hour_limit", 60) -- 60 * 60)
     interstitial_delay = limit.create_limit("interstitial_delay")
     interstitial_delay.time = 0
     if interstitial_hour_limit.active or interstitial_day_limit.active then
@@ -60,6 +60,13 @@ local function init_limits(self)
         end)
     else
         call_init_callback(self)
+    end
+end
+
+local function increase_limit(limit_object)
+    if limit_object.active then
+        limit.increase(limit_object)
+        M.storage_set(limit_object.name, limit.get_save_value(limit_object))
     end
 end
 
@@ -192,19 +199,25 @@ end
 ---Show interstitial ads
 ---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
 function M.show_interstitial(callback)
-    local day_limit = limit.check(interstitial_day_limit)
-    local hour_limit = limit.check(interstitial_hour_limit)
-    local delay_limit = limit.check_time_limit(interstitial_delay)
+    local day_limit = limit.is_count_exceeded(interstitial_day_limit)
+    local hour_limit = limit.is_count_exceeded(interstitial_hour_limit)
+    local delay_limit = limit.is_time_exceeded(interstitial_delay)
     if day_limit or hour_limit or delay_limit then
         if callback then
             timer.delay(0, false, function(self)
-                callback(self, nil, {result = true, day_limit_exceeded = day_limit, hour_limit_exceeded = hour_limit, delay_exceeded = delay_limit})
+                callback(self, nil, {
+                    result = true,
+                    exceeded = true,
+                    day_limit_exceeded = day_limit,
+                    hour_limit_exceeded = hour_limit,
+                    delay_exceeded = delay_limit
+                })
             end)
         end
     else
-        ---TODO: save limit count to server
-        limit.increase(interstitial_hour_limit)
-        limit.increase(interstitial_day_limit)
+        limit.reset_time(interstitial_delay)
+        increase_limit(interstitial_hour_limit)
+        increase_limit(interstitial_day_limit)
         M.send(events.SHOW_NATIVE_ADS, {ad_format = "interstitial"}, callback)
     end
 end
