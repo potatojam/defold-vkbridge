@@ -27,6 +27,9 @@ engine_arguments = --verify-graphics-calls=false
 [vk_bridge]
 auto_init = true
 wv_banners = true
+interstitial_day_limit = 10
+interstitial_hour_limit = 5
+interstitial_delay = 5
 
 [input]
 game_binding = /input/game.input_bindingc

@@ -3,6 +3,7 @@ local mock = require("vkbridge.helpers.mock")
 local helper = require("vkbridge.helpers.helper")
 local listeners = require("vkbridge.helpers.listeners")
 local events = require("vkbridge.events")
+local limit = require("vkbridge.helpers.limit")
 
 --
 -- HELPERS
@@ -17,6 +18,9 @@ M.is_iframe_ch = false
 M.is_embedded_ch = false
 
 local init_callback = nil
+local interstitial_day_limit = nil
+local interstitial_hour_limit = nil
+local interstitial_delay = nil
 
 local function call_init_callback(self, err)
     if init_callback then
@@ -30,6 +34,35 @@ local function call_init_callback(self, err)
     end
 end
 
+local function init_limits(self)
+    interstitial_day_limit = limit.create_limit("interstitial_day_limit", 24 * 60 * 60)
+    interstitial_hour_limit = limit.create_limit("interstitial_hour_limit", 60 * 60)
+    interstitial_delay = limit.create_limit("interstitial_delay")
+    interstitial_delay.time = 0
+    if interstitial_hour_limit.active or interstitial_day_limit.active then
+        local keys = {}
+        if interstitial_hour_limit.active then
+            table.insert(keys, interstitial_hour_limit.name)
+        end
+        if interstitial_day_limit.active then
+            table.insert(keys, interstitial_day_limit.name)
+        end
+        M.storage_get(keys, function(self, err, data)
+            if err then
+                pprint("Interstitial keys not received. Error: ", err)
+            else
+                for i, value in pairs(data.keys) do
+                    limit.parse_limit(interstitial_day_limit, value)
+                    limit.parse_limit(interstitial_hour_limit, value)
+                end
+            end
+            call_init_callback(self)
+        end)
+    else
+        call_init_callback(self)
+    end
+end
+
 local function init_listener(self, cb_id, message_id, message)
     if message_id == "init" then
         M.vkbridge_ready = true
@@ -37,7 +70,7 @@ local function init_listener(self, cb_id, message_id, message)
         M.is_standalone_ch = vkbridge_private.is_standalone()
         M.is_iframe_ch = vkbridge_private.is_iframe()
         M.is_embedded_ch = vkbridge_private.is_embedded()
-        call_init_callback(self)
+        init_limits(self)
     elseif message_id == "error" then
         print("VkBridge couldn't be initialized.")
         call_init_callback(self, message)
@@ -159,7 +192,21 @@ end
 ---Show interstitial ads
 ---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
 function M.show_interstitial(callback)
-    M.send(events.SHOW_NATIVE_ADS, {ad_format = "interstitial"}, callback)
+    local day_limit = limit.check(interstitial_day_limit)
+    local hour_limit = limit.check(interstitial_hour_limit)
+    local delay_limit = limit.check_time_limit(interstitial_delay)
+    if day_limit or hour_limit or delay_limit then
+        if callback then
+            timer.delay(0, false, function(self)
+                callback(self, nil, {result = true, day_limit_exceeded = day_limit, hour_limit_exceeded = hour_limit, delay_exceeded = delay_limit})
+            end)
+        end
+    else
+        ---TODO: save limit count to server
+        limit.increase(interstitial_hour_limit)
+        limit.increase(interstitial_day_limit)
+        M.send(events.SHOW_NATIVE_ADS, {ad_format = "interstitial"}, callback)
+    end
 end
 
 ---Check if there is the rewarded ad available to serve
