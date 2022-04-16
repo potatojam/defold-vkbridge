@@ -47,10 +47,16 @@ end
 [vk_bridge]
 auto_init = true
 wv_banners = true
+interstitial_day_limit = 50
+interstitial_hour_limit = 10
+interstitial_delay = 90
 ```
 
-* `auto_init` - The application initializes the **VKBridge** on startup. To prevent **VKBridge** from being initialized, set `false`. Then the initialization will be when `vkbridge.init(init_handler)` is called.
-* `wv_banners` - Loads a script containing a [WebView banner](#webview-banner).
+* `auto_init` <kbd>boolean</kbd> _optional_ The application initializes the **VKBridge** on startup. To prevent **VKBridge** from being initialized, set `false`. Then the initialization will be when `vkbridge.init(init_handler)` is called. Default `true`.
+* `wv_banners` <kbd>boolean</kbd> _optional_ Loads a script containing a [WebView banner](#webview-banner). Default `false`.
+* `interstitial_day_limit` <kbd>number</kbd> _optional_ Set a [limited](#limits) number per day for interstitial ads. Default: `no limit`. If set to `0`, then there is `no limit`.
+* `interstitial_hour_limit` <kbd>number</kbd> _optional_ Set a [limited](#limits) number per hour for interstitial ads. Default: `no limit`. If set to `0`, then there is `no limit`.
+* `interstitial_delay` <kbd>number</kbd> _optional_ Set a [limit](#limits) per seconds for interstitial ads. Default: `no limit`. If set to `0`, then there is `no limit`.
 
 ## Lua API
 
@@ -186,6 +192,10 @@ Return the names of all variables.
 - `offset` <kbd>number|nil</kbd> _required_ The offset required to select a particular subset of variable names.
 - `callback` <kbd>function</kbd> _required_ callback with response data
 
+### `vkbridge.clear_limits()`
+
+Clear interstitial limits if used
+
 ### `vkbridge.get_user_info(callback)`
 
 Allows you to get basic data about the profile of the user who launched the application
@@ -238,6 +248,24 @@ Set WebView banner configs.
 
 - `position` <kbd>string</kbd> _required_ Banner location. Can be `top` or `bottom`.
 - `count` <kbd>number</kbd> Number of banners in a column. Default `1`
+
+## Limits
+
+Vk advises to make limiting the display of ads.
+The platform itself does not block display of ads. However, ads can be turned off for you if they think that you are cheating on it.
+Limits only work for [vkbridge.show_interstitial(callback)](#vkbridge.show_interstitial(callback)) function.
+Limits use storage to save data for day and hour. Keys: `interstitial_day_limit` and `interstitial_hour_limit`.
+To the received data will be added some key(`exceeded`, `delay_exceeded`, `hour_limit_exceeded`, `day_limit_exceeded`), If the limit is exceeded. The table looks like this:
+
+```lua
+{
+  delay_exceeded = true, -- if delay limit is exceeded
+  hour_limit_exceeded = true, -- if hour limit is exceeded
+  day_limit_exceeded = true, -- if day limit is exceeded
+  result = true, -- the result will always be true
+  exceeded = true -- if any limit is exceeded
+}
+```
 
 ## Credits
 
