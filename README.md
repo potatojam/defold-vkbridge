@@ -253,7 +253,7 @@ Set WebView banner configs.
 
 Vk advises to make limiting the display of ads.
 The platform itself does not block display of ads. However, ads can be turned off for you if they think that you are cheating on it.
-Limits only work for [vkbridge.show_interstitial(callback)](#vkbridge.show_interstitial(callback)) function.
+Limits only work for [vkbridge.show_interstitial(callback)](#vkbridgeshow_interstitialcallback) function.
 Limits use storage to save data for day and hour. Keys: `interstitial_day_limit` and `interstitial_hour_limit`.
 To the received data will be added some key(`exceeded`, `delay_exceeded`, `hour_limit_exceeded`, `day_limit_exceeded`), If the limit is exceeded. The table looks like this:
 
