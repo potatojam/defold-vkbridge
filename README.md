@@ -194,7 +194,7 @@ Return the names of all variables.
 
 ### `vkbridge.clear_limits()`
 
-Clear interstitial limits if used
+Clear interstitial [limits](#limits) if used
 
 ### `vkbridge.get_user_info(callback)`
 

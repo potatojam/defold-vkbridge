@@ -90,6 +90,10 @@ end
 function vkbridge.storage_get_keys(count, offset, callback)
 end
 
+---Clear interstitial limits if used
+function vkbridge.clear_limits()
+end
+
 ---Allows you to get basic data about the profile of the user who launched the application
 ---@param callback function callback with response data `function(self, err, data)`. If successful: `err = nil`.
 function vkbridge.get_user_info(callback)
