@@ -36,7 +36,7 @@ end
 
 local function init_limits(self)
     interstitial_day_limit = limit.create_limit("interstitial_day_limit", 24 * 60 * 60)
-    interstitial_hour_limit = limit.create_limit("interstitial_hour_limit", 60) -- 60 * 60)
+    interstitial_hour_limit = limit.create_limit("interstitial_hour_limit", 60 * 60)
     interstitial_delay = limit.create_limit("interstitial_delay")
     interstitial_delay.time = 0
     if interstitial_hour_limit.active or interstitial_day_limit.active then
@@ -265,6 +265,19 @@ end
 function M.storage_get_keys(count, offset, callback)
     assert(type(count) == "number", "Wrong count format. Must be number.")
     M.send(events.STORAGE_GET_KEYS, {count = count, offset = offset}, callback)
+end
+
+---Clear interstitial limits if used
+function M.clear_limits()
+    if interstitial_hour_limit.active then
+        limit.parse_limit(interstitial_hour_limit, {key = interstitial_hour_limit.name, value = ""})
+        increase_limit(interstitial_hour_limit)
+    end
+    if interstitial_day_limit.active then
+        limit.parse_limit(interstitial_day_limit, {key = interstitial_day_limit.name, value = ""})
+        increase_limit(interstitial_day_limit)
+    end
+    interstitial_delay.time = 0
 end
 
 ---Allows you to get basic data about the profile of the user who launched the application

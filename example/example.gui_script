@@ -52,7 +52,7 @@ local function print_log(self, method, data)
             text = text .. serializeTable(data)
         else
             text = text .. tostring(data)
-            pprint(text .. tostring(data))
+            pprint(text)
         end
     end
     self.logs = self.logs .. text .. "\n"
@@ -169,6 +169,11 @@ local function on_hide_webview_banner(self)
     print_log(self, "hide_webview_banner", result)
 end
 
+local function on_clear_limits(self)
+    vkbridge.clear_limits()
+    print_log(self, "on_clear_limits", "limits cleared")
+end
+
 function init(self)
     vkbridge.subscribe(on_subscribe)
 
@@ -190,6 +195,7 @@ function init(self)
     self.druid:new_button("btn_storage_set", on_storage_set)
     self.druid:new_button("btn_storage_get", on_storage_get)
     self.druid:new_button("btn_storage_get_keys", on_storage_get_keys)
+    self.druid:new_button("btn_clear_limits", on_clear_limits)
     self.druid:new_button("btn_get_user_info", on_get_user_info)
     self.druid:new_button("btn_show_webview_banner", on_show_webview_banner)
     self.druid:new_button("btn_hide_webview_banner", on_hide_webview_banner)
