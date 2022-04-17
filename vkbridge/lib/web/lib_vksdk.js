@@ -181,7 +181,7 @@ var LibVkBridge = {
                     }
                 })
                 .catch((err) => {
-                    self.send(cb_id, "error", VkBridgeHelper.conver_error(err.toString()));
+                    self.send(cb_id, "error", VkBridgeHelper.conver_error(err));
                 });
         } catch (err) {
             self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(err.toString()));
@@ -202,7 +202,7 @@ var LibVkBridge = {
                 self.send(cb_id, null, JSON.stringify({ result: true }));
             } else {
                 if (response.err) {
-                    self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(response.err.toString()));
+                    self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(response.err));
                 } else {
                     self.delaySend(cb_id, "error", VkBridgeHelper.conver_error("Error loading banner"));
                 }
@@ -238,7 +238,7 @@ var LibVkBridge = {
             self.send(cb_id, null, JSON.stringify({ result: true }));
         } else {
             if (response.err) {
-                self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(response.err.toString()));
+                self.delaySend(cb_id, "error", VkBridgeHelper.conver_error(response.err));
             } else {
                 self.delaySend(cb_id, "error", VkBridgeHelper.conver_error("Error refreshing banner"));
             }
