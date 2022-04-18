@@ -174,6 +174,13 @@ local function on_clear_limits(self)
     print_log(self, "on_clear_limits", "limits cleared")
 end
 
+local function on_show_leaderboard(self)
+    vkbridge.send(events.SHOW_LEADER_BOARD_BOX, {user_result = 100}, function (self, err, data)
+        print_log(self, "show_leaderboard_box", err or data)
+    end)
+end
+
+
 function init(self)
     vkbridge.subscribe(on_subscribe)
 
@@ -202,6 +209,7 @@ function init(self)
     self.druid:new_button("btn_load_webview_banner", on_load_webview_banner)
     self.druid:new_button("btn_unload_webview_banner", on_unload_webview_banner)
     self.druid:new_button("btn_refresh_webview_banner", on_refresh_webview_banner)
+    self.druid:new_button("btn_show_leaderboard", on_show_leaderboard)
 
     print_log(self, "init", "version: " .. sys.get_config("project.version"))
     on_init_vk()
