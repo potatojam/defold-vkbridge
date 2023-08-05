@@ -54,29 +54,8 @@ void SendObjectMessage(const int cb_id, const char *message_id, const char *mess
                 lua_pushnil(L);
             }
 
-            dmJson::Document doc;
-            dmJson::Result r = dmJson::Parse(message, &doc);
-            if (r == dmJson::RESULT_OK && doc.m_NodeCount > 0)
-            {
-                char error_str_out[128];
-                if (dmScript::JsonToLua(L, &doc, 0, error_str_out, sizeof(error_str_out)) < 0)
-                {
-                    dmLogError("Failed converting object JSON to Lua; %s", error_str_out);
-                    is_fail = true;
-                }
-            }
-            else
-            {
-                dmLogError("Failed to parse JS object(%d): (%s)", r, message);
-                is_fail = true;
-            }
-            dmJson::Free(&doc);
-            if (is_fail)
-            {
-                lua_pop(L, 3);
-                assert(top == lua_gettop(L));
-                return;
-            }
+            dmScript::JsonToLua(L, message, strlen(message)); // throws lua error if it fails
+            
             int ret = lua_pcall(L, 4, 0, 0);
             if (ret != 0)
             {
